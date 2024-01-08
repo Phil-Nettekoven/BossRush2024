@@ -6,7 +6,8 @@ public class GridMovement : MonoBehaviour
 {
     private bool isMoving;
     private Vector3 origPos, targetPos;
-    private float timeToMove = 0.2f;
+    private float timeToMove = 0.1f;
+    private float timeToWait = 0.05f;
 
     void Update()
     {
@@ -36,6 +37,12 @@ public class GridMovement : MonoBehaviour
         }
 
         transform.position = targetPos; //this line prevents tiny offsets from adding up after many movements, keeping player on grid
+
+        while (elapsedTime < (timeToMove + timeToWait))
+        {
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
 
         isMoving = false;
     }
