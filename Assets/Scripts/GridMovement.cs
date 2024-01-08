@@ -6,8 +6,10 @@ public class GridMovement : MonoBehaviour
 {
     private bool isMoving;
     private Vector3 origPos, targetPos;
-    private float timeToMove = 0.1f;
-    private float timeToWait = 0.05f;
+    private float timeToMove = 0.05f;
+    private float timeToWait = 0.075f;
+
+    [SerializeField] private Transform _cam;
 
     void Update()
     {
@@ -18,6 +20,8 @@ public class GridMovement : MonoBehaviour
             if ((Input.GetKey(KeyCode.S)) || (Input.GetKey(KeyCode.DownArrow))) StartCoroutine(MovePlayer(Vector3.down));
             if ((Input.GetKey(KeyCode.D)) || (Input.GetKey(KeyCode.RightArrow))) StartCoroutine(MovePlayer(Vector3.right));
         }
+
+        //_cam.transform.position = transform.position+(new Vector3(0,0,-15));
     }
 
     private IEnumerator MovePlayer(Vector3 direction)
