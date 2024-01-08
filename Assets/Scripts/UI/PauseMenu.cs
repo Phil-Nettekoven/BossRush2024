@@ -31,12 +31,16 @@ public class PauseMenu : MonoBehaviour
     }
     public void BacktoMenu()
     {
-        _gm._pauseGame = false;
+        _gm.ResumeGame();
         SceneManager.LoadScene(0);
     }
     public void QuitGame()
     {
         Application.Quit();
         print("Quit");
+    }
+    public void ResumeGame()
+    {
+        _gm.ResumeGame();
     }
 }

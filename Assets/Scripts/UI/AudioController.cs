@@ -5,35 +5,40 @@ using UnityEngine.UI;
 
 public class AudioController : MonoBehaviour
 {
-    public Slider _musicSlider, _sfxSlider;
-    public bool _musicMuted, _sfxMuted;
+    public Slider _musicSlider, _sfxSlider;  
     [SerializeField]
     private GameObject _music, _sfx;
+    private AudioManager _am;
+
+    private void Awake()
+    {
+        _am = AudioManager.Instance;
+        if (_am == null)
+        {
+            Debug.Log("Tile could not find GameManager");
+        }
+    }
     public void ToggleMusic()
     {
         AudioManager.Instance.ToggleMusic();
-        if(_musicMuted == false)
+        if(_am._musicMuted == false)
         {
-            _music.gameObject.SetActive(true);
-            _musicMuted = true;
+            _am._musicMuted = true;
         } else
         {
-            _music.gameObject.SetActive(false);
-            _musicMuted = false;
+            _am._musicMuted = false;
         }
     }
     public void ToggleSFX()
     {
         AudioManager.Instance.ToggleSFX();
-        if (_sfxMuted == false)
+        if (_am._sfxMuted == false)
         {
-            _sfx.gameObject.SetActive(true);
-            _sfxMuted = true;
+            _am._sfxMuted = true;
         }
         else
         {
-            _sfx.gameObject.SetActive(false);
-            _sfxMuted = false;
+            _am._sfxMuted = false;
         }
     }
     public void MusicVolume()
@@ -44,5 +49,25 @@ public class AudioController : MonoBehaviour
     {
         AudioManager.Instance.SFXVolume(_sfxSlider.value);
     }
+    public void Update()
+    {
+        if (_am._musicMuted == false)
+        {
+            _music.gameObject.SetActive(false);
+        }
+        else
+        {
+            _music.gameObject.SetActive(true);
+        }
+        if (_am._sfxMuted == false)
+        {
+            _sfx.gameObject.SetActive(false);
+        }
+        else
+        {
+            _sfx.gameObject.SetActive(true);
+        }
+    }
+  
 }
 

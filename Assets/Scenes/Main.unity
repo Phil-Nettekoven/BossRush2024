@@ -570,14 +570,14 @@ PrefabInstance:
     - target: {fileID: 4486276651584048403, guid: 06f5e2c2be1f3d946b22e252e7a5dc96, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 412477033}
+      objectReference: {fileID: 218175291}
     - target: {fileID: 4486276651584048403, guid: 06f5e2c2be1f3d946b22e252e7a5dc96, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: ResumeGame
       objectReference: {fileID: 0}
     - target: {fileID: 4486276651584048403, guid: 06f5e2c2be1f3d946b22e252e7a5dc96, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: GameManager, Assembly-CSharp
+      value: PauseMenu, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4486276651584048403, guid: 06f5e2c2be1f3d946b22e252e7a5dc96, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_BoolArgument
@@ -710,17 +710,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1981564269}
   m_SourcePrefab: {fileID: 100100000, guid: 06f5e2c2be1f3d946b22e252e7a5dc96, type: 3}
---- !u!114 &412477033 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 304034835195201089, guid: 5f003a8be6509774583857dba7be904d, type: 3}
-  m_PrefabInstance: {fileID: 5549704143053074928}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ea629bdabf501e48a0e6d99f62a5313, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &416086419 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5682021156432365170, guid: 06f5e2c2be1f3d946b22e252e7a5dc96, type: 3}

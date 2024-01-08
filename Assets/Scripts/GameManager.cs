@@ -47,4 +47,5 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         _pauseGame = false;
     }
+  
 }
