@@ -50,4 +50,10 @@ public class GridMovement : MonoBehaviour
 
         isMoving = false;
     }
+
+    public bool moveStatus()
+    {
+        return isMoving;
+    }
 }
+
