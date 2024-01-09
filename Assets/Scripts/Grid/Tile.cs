@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,19 +24,11 @@ public class Tile : MonoBehaviour
 
     private void Update()
     {
-
-        if (!_gm._pauseGame)
+        if (_gm._pauseGame == false)
         {
-            if (Input.GetKeyDown("space")) 
-            {
-                _renderer.color = Color.clear;
-            }
-            else if (Input.GetKeyUp("space"))
-            {
-                _renderer.color = _isOffset ? _offsetColor : _baseColor;
-            }
+            toggleGrid();
         }
-        else 
+        else
         {
             _highlight.SetActive(false);
             _renderer.color = _isOffset ? _offsetColor : _baseColor;
@@ -47,6 +40,21 @@ public class Tile : MonoBehaviour
     {
         _renderer.color = isOffset ? _offsetColor : _baseColor;
         _isOffset = isOffset;
+
+    }
+
+    void toggleGrid()
+    {
+
+
+            if (Input.GetKeyDown("space"))
+            {
+                _renderer.color = Color.clear;
+            }
+            else if (Input.GetKeyUp("space"))
+            {
+                _renderer.color = _isOffset ? _offsetColor : _baseColor;
+            }
 
     }
 
