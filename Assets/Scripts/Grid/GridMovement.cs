@@ -7,7 +7,7 @@ public class GridMovement : MonoBehaviour
     private bool isMoving;
     private Vector3 origPos, targetPos;
     private float timeToMove = 0.05f;
-    private float timeToWait = 0.075f;
+    private float timeToWait = 0.150f;
 
     [SerializeField] private Transform _cam;
 

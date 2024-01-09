@@ -9,19 +9,20 @@ public class CameraFollow : MonoBehaviour
     private Vector3 desiredPosition;
     private Vector3 smoothedPosition;
     private float distanceToTarget;
+    private float snapThreshold = 0.01f;
 
     void LateUpdate()
     {
         desiredPosition = target.position + offset;
         distanceToTarget = Vector3.Distance(desiredPosition, transform.position);
 
-        if(distanceToTarget > 0.01f)
+        if(distanceToTarget > snapThreshold)
         {
             if(distanceToTarget > minimumSpeed) smoothSpeed = distanceToTarget;
             else smoothSpeed = minimumSpeed;
             smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
             transform.position = smoothedPosition;
         }
-        else if (distanceToTarget < 0.01f && distanceToTarget > 0) transform.position = desiredPosition;
+        else if (distanceToTarget < snapThreshold && distanceToTarget > 0) transform.position = desiredPosition;
     }
 }

@@ -5,16 +5,10 @@ using UnityEngine;
 public class EnemyGridMovement : MonoBehaviour
 {
     private bool isMoving;
-    private Vector3 origPos, targetPos, playerPos;
+    private Vector3 origPos, targetPos, playerPos, nextMove;
     private float timeToMove = 0.05f;
-    private float timeToWait = 0.075f;
-    private Vector3 diff;
-
-    private Vector3[] directions = new Vector3[4];
-    private Vector3 nextMove;
+    private float timeToWait = 0.00f;
     private bool hasNextMove;
-    Vector3 curPlayerPosition;
-
 
     [SerializeField] private Transform _cam;
 
@@ -32,14 +26,14 @@ public class EnemyGridMovement : MonoBehaviour
         {
             if (hasNextMove == false)
             {
-                curPlayerPosition = Player.transform.position;
-                nextMove = findBestMove(curPlayerPosition);
+                playerPos = Player.transform.position;
+                nextMove = findBestMove(playerPos);
             }
             
-            if (curPlayerPosition != Player.transform.position) {
+            if (playerPos != Player.transform.position) {
                 StartCoroutine(MoveEnemy(nextMove));
                 hasNextMove = false;
-                curPlayerPosition = Player.transform.position;
+                playerPos = Player.transform.position;
             }
             
         }
