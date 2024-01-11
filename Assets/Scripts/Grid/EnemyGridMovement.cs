@@ -8,35 +8,19 @@ public class EnemyGridMovement : MonoBehaviour
     private Vector3 origPos, targetPos, playerPos, nextMove;
     private float timeToMove = 0.05f;
     private float timeToWait = 0.00f;
-    private bool hasNextMove;
 
+    private Queue<string> queuedMoves;
     [SerializeField] private Transform _cam;
 
     public GameObject Player;
     private void Awake()
     {
         Player = GameObject.Find("Player");
-        hasNextMove = false;
+        queuedMoves = new Queue<string>();
     }
 
     void Update()
     {
-
-        if (!isMoving)
-        {
-            if (hasNextMove == false)
-            {
-                playerPos = Player.transform.position;
-                nextMove = findBestMove(playerPos);
-            }
-            
-            if (playerPos != Player.transform.position) {
-                StartCoroutine(MoveEnemy(nextMove));
-                hasNextMove = false;
-                playerPos = Player.transform.position;
-            }
-            
-        }
 
         //_cam.transform.position = transform.position+(new Vector3(0,0,-15));
     }
@@ -88,13 +72,13 @@ public class EnemyGridMovement : MonoBehaviour
 
             
         }
-        hasNextMove = true;
+
         return direction;
     }
 
     private IEnumerator MoveEnemy(Vector3 direction)
     {
-        isMoving = true;
+        //isMoving = true;
         //yield return new WaitForSeconds(3);
         float elapsedTime = 0;
 
@@ -116,6 +100,22 @@ public class EnemyGridMovement : MonoBehaviour
             yield return null;
         }
 
-        isMoving = false;
+        //isMoving = false;
+    }
+
+    private void NextMove()
+    {
+        //print(queuedMoves.Count);
+        if (queuedMoves.Count <= 0)
+        {
+            playerPos = Player.transform.position;
+            //print(playerPos);
+            if (Vector3.Distance(this.transform.position, playerPos) < 5)
+            {
+                StartCoroutine(MoveEnemy(findBestMove(playerPos)));
+            }
+        }
     }
 }
+
+

@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public bool _pauseGame;
+    public int _moveCount;
 
         public void Awake()
         {
@@ -18,10 +19,11 @@ public class GameManager : MonoBehaviour
             {
                 Destroy(gameObject);
             }
+            _moveCount = 0;
         }
     private void Update()
     {
-        { 
+        {
             if(Input.GetKeyDown(KeyCode.Escape))
             {
                 if(!_pauseGame)
@@ -46,6 +48,11 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         _pauseGame = false;
+    }
+
+    public void SendSignalMove()
+    {
+        gameObject.BroadcastMessage("NextMove");
     }
   
 }

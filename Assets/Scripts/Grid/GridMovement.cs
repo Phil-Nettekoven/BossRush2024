@@ -8,9 +8,14 @@ public class GridMovement : MonoBehaviour
     private Vector3 origPos, targetPos;
     private float timeToMove = 0.05f;
     private float timeToWait = 0.150f;
+    private GameManager _gm;
 
     [SerializeField] private Transform _cam;
 
+    private void Awake()
+    {
+        _gm = GameManager.Instance;
+    }
     void Update()
     {
         if (!isMoving)
@@ -26,6 +31,8 @@ public class GridMovement : MonoBehaviour
 
     private IEnumerator MovePlayer(Vector3 direction)
     {
+
+        _gm.SendSignalMove();
         isMoving = true;
 
         float elapsedTime = 0;
