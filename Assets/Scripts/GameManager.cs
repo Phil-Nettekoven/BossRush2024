@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
 
     public KeyValuePair<string, int> GenerateKeyPair(string str, int integer)
     {
-        return new KeyValuePair<string, int>("attack1", 1);
+        return new KeyValuePair<string, int>(str, integer);
     }
   
 }
