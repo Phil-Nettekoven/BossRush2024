@@ -5,18 +5,21 @@ using UnityEngine;
 public class EnemyGridMovement : MonoBehaviour
 {
     private bool isMoving;
-    private Vector3 origPos, targetPos, playerPos, nextMove;
+    private Vector3 origPos, targetPos, playerPos;
     private float timeToMove = 0.05f;
     private float timeToWait = 0.00f;
+    private float playerDistance;
+    private GameManager _gm;
 
-    private Queue<string> queuedMoves;
+    private Queue<KeyValuePair<string, int>> queuedMoves;
     [SerializeField] private Transform _cam;
 
     public GameObject Player;
     private void Awake()
     {
+        _gm = GameManager.Instance;
         Player = GameObject.Find("Player");
-        queuedMoves = new Queue<string>();
+        queuedMoves = new Queue<KeyValuePair<string, int>>();
     }
 
     void Update()
@@ -105,12 +108,18 @@ public class EnemyGridMovement : MonoBehaviour
 
     private void NextMove()
     {
-        //print(queuedMoves.Count);
-        if (queuedMoves.Count <= 0)
+        print(queuedMoves.Count);
+        playerPos = Player.transform.position;
+        playerDistance = Vector3.Distance(this.transform.position, playerPos);
+        
+        if (queuedMoves.Count <= 0 && playerDistance < 5)
         {
-            playerPos = Player.transform.position;
-            //print(playerPos);
-            if (Vector3.Distance(this.transform.position, playerPos) < 5)
+            if (playerDistance <= 2.5) //begin attack
+            {
+                queuedMoves.Enqueue(_gm.GenerateKeyPair("attack1", 1));
+            }
+            
+            else if (playerDistance <= 7.5) //chase player
             {
                 StartCoroutine(MoveEnemy(findBestMove(playerPos)));
             }
