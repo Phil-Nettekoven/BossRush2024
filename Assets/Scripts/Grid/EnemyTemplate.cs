@@ -5,10 +5,7 @@ using UnityEngine;
 
 public class EnemyGridMovement : MonoBehaviour
 {
-    private bool isMoving;
-    private Vector3 origPos, targetPos, playerPos, teleportPos;
-    private readonly float timeToMove = 0.05f;
-    private readonly float timeToWait = 0.00f;
+    private Vector3 playerPos, teleportPos;
     
     private float playerDistance;
     private readonly double chaseDistance = 7.5;
@@ -22,6 +19,8 @@ public class EnemyGridMovement : MonoBehaviour
     private Queue<KeyValuePair<string, int>> queuedMoves;
 
     public GameObject Player;
+
+    public GameObject self;
 
     private void Awake()
     {
@@ -86,33 +85,6 @@ public class EnemyGridMovement : MonoBehaviour
         return direction;
     }
 
-    private IEnumerator MoveEnemy(Vector3 direction)
-    {
-        //isMoving = true;
-        //yield return new WaitForSeconds(3);
-        float elapsedTime = 0;
-
-        origPos = transform.position;
-        targetPos = origPos + direction;
-
-        while (elapsedTime < timeToMove)
-        {
-            transform.position = Vector3.Lerp(origPos, targetPos, (elapsedTime / timeToMove));
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        transform.position = targetPos; //this line prevents tiny offsets from adding up after many movements, keeping enemy on grid
-
-        while (elapsedTime < (timeToMove + timeToWait))
-        {
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        //isMoving = false;
-    }
-
     private void NextMove()
     {
         //print(queuedMoves.Count);
@@ -146,6 +118,7 @@ public class EnemyGridMovement : MonoBehaviour
             }
             else if (playerDistance >= teleportDistance)
             {
+                print("unga bunga");
                 teleportPos = playerPos;
                 teleportPos.x += Random.Range(1, 5);
                 teleportPos.y += Random.Range(1, 5);
@@ -155,7 +128,7 @@ public class EnemyGridMovement : MonoBehaviour
             else //chase player
             {
                 chaseCounter++;
-                StartCoroutine(MoveEnemy(findBestMove(playerPos)));
+                StartCoroutine(GameManager.Instance.Move(self, findBestMove(playerPos), 1f));
             }
         }
     }

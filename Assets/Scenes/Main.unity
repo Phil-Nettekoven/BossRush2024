@@ -810,8 +810,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b55615ff6ee240e4e9106d132d385834, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cam: {fileID: 0}
   Player: {fileID: 849447565}
+  self: {fileID: 388678659}
 --- !u!50 &388678663
 Rigidbody2D:
   serializedVersion: 4
@@ -896,6 +896,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d639b063076563947acf561cfa6ab32c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isMoving: 0
+  origPos: {x: 0, y: 0, z: 0}
+  targetPos: {x: 0, y: 0, z: 0}
+  timeToMove: 0.05
+  timeToWait: 0.15
+  _gm: {fileID: 0}
   _cam: {fileID: 1670562907}
 --- !u!212 &849447567
 SpriteRenderer:
@@ -1787,6 +1793,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 304034835195201089, guid: 5f003a8be6509774583857dba7be904d, type: 3}
+      propertyPath: _player
+      value: 
+      objectReference: {fileID: 849447565}
     - target: {fileID: 304034835195201089, guid: 5f003a8be6509774583857dba7be904d, type: 3}
       propertyPath: _pauseMenu
       value: 

@@ -1,18 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
+    private static GameManager _instance;
+    public static GameManager Instance { get { return _instance; } }
     public bool _pauseGame;
     public int _moveCount;
+    private bool isMoving = false;
+    private float timeToMove = 0.05f;
+    private float timeToWait = 0.150f;
 
-        public void Awake()
+    [SerializeField] private GameObject _player;
+
+
+    public void Awake()
         {
-            if (Instance == null)
+            if (_instance == null)
             {
-                Instance = this;
+                _instance = this;
                 DontDestroyOnLoad(gameObject);
             }
             else
@@ -35,6 +44,24 @@ public class GameManager : MonoBehaviour
                     ResumeGame();
                 }
             }
+            if (!isMoving)
+            {
+                if ((Input.GetKey(KeyCode.W)) || (Input.GetKey(KeyCode.UpArrow))) {
+                    StartCoroutine(Move(_player, Vector3.up, 1f));
+                }
+                if ((Input.GetKey(KeyCode.A)) || (Input.GetKey(KeyCode.LeftArrow)))
+                {
+                    StartCoroutine(Move(_player, Vector3.left, 1f));
+                }
+                if ((Input.GetKey(KeyCode.S)) || (Input.GetKey(KeyCode.DownArrow)))
+                {
+                    StartCoroutine(Move(_player, Vector3.down, 1f));
+                }
+                if ((Input.GetKey(KeyCode.D)) || (Input.GetKey(KeyCode.RightArrow)))
+                {
+                    StartCoroutine(Move(_player, Vector3.right, 1f));
+                }
+            }
         }
     }
 
@@ -52,12 +79,46 @@ public class GameManager : MonoBehaviour
 
     public void SendSignalMove()
     {
-        gameObject.BroadcastMessage("NextMove");
+        BroadcastMessage("NextMove");
     }
 
     public KeyValuePair<string, int> GenerateKeyPair(string str, int integer)
     {
         return new KeyValuePair<string, int>(str, integer);
     }
-  
+
+    public IEnumerator Move(GameObject gameObject, Vector3 direction, float distance)
+    {
+
+        if (gameObject == _player)
+        {
+            isMoving = true;
+            SendSignalMove();
+        }
+
+        Vector3 origPos, targetPos;
+
+        float elapsedTime = 0;
+
+        origPos = gameObject.transform.position;
+        targetPos = origPos + (direction * distance);
+
+        while (elapsedTime < timeToMove)
+        {
+            gameObject.transform.position = Vector3.Lerp(origPos, targetPos, (elapsedTime / timeToMove));
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        gameObject.transform.position = targetPos; //this line prevents tiny offsets from adding up after many movements, keeping player on grid
+
+        while (elapsedTime < (timeToMove + timeToWait))
+        {
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        if (gameObject == _player) isMoving = false;
+    }
+
 }
