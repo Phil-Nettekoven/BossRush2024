@@ -191,6 +191,7 @@ MonoBehaviour:
   _offsetColor: {r: 0.015686275, g: 0.003921569, b: 0.039215688, a: 1}
   _renderer: {fileID: 1680807352469362586}
   _highlight: {fileID: 1449396256926131175}
+  _isOffset: 0
 --- !u!61 &1553237517446752231
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -198,7 +199,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6413955346353656411}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}

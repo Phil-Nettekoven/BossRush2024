@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,7 +16,6 @@ public class GameManager : MonoBehaviour
     private float timeToWait = 0.150f;
 
     [SerializeField] private GameObject _player;
-
 
     public void Awake()
         {
@@ -98,19 +98,33 @@ public class GameManager : MonoBehaviour
 
         Vector3 origPos, targetPos;
 
+        bool hitWall = false;
         float elapsedTime = 0;
 
         origPos = gameObject.transform.position;
         targetPos = origPos + (direction * distance);
 
+        int raycastLength = 1;
+        RaycastHit2D hit;
+        if (hit = Physics2D.Raycast(targetPos, direction, raycastLength / 2))
+        {
+            print(hit.collider.gameObject.tag);
+            if (hit.collider.gameObject.tag == "Wall")
+            {
+                print("inga hunga");
+                Debug.DrawRay(gameObject.transform.position, direction, Color.green);
+                hitWall = true;
+            }
+        }
+
         while (elapsedTime < timeToMove)
         {
-            gameObject.transform.position = Vector3.Lerp(origPos, targetPos, (elapsedTime / timeToMove));
+            if(!hitWall) gameObject.transform.position = Vector3.Lerp(origPos, targetPos, (elapsedTime / timeToMove));
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        gameObject.transform.position = targetPos; //this line prevents tiny offsets from adding up after many movements, keeping player on grid
+        if(!hitWall) gameObject.transform.position = targetPos; //this line prevents tiny offsets from adding up after many movements, keeping player on grid
 
         while (elapsedTime < (timeToMove + timeToWait))
         {
