@@ -106,13 +106,14 @@ public class GameManager : MonoBehaviour
 
         int raycastLength = 1;
         RaycastHit2D hit;
-        if (hit = Physics2D.Raycast(targetPos, direction, raycastLength / 2))
+        if (hit = Physics2D.Raycast(origPos + direction, direction, raycastLength/2))
         {
             print(hit.collider.gameObject.tag);
+            Debug.DrawRay(origPos, direction, Color.green, 2);
             if (hit.collider.gameObject.tag == "Wall")
             {
                 print("inga hunga");
-                Debug.DrawRay(gameObject.transform.position, direction, Color.green);
+                
                 hitWall = true;
             }
         }
