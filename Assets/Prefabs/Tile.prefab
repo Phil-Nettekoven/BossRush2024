@@ -187,8 +187,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f5fdb3006eb1dd40863e5b0ef44779d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseSprite: {fileID: -2089759596, guid: 284bac7a291bd2b41a37e6bc72a16990, type: 3}
-  _offsetSprite: {fileID: 691705248, guid: ea19be4f18eda8744853a04f31a2f272, type: 3}
+  _baseSprite: {fileID: -1474977774, guid: 284bac7a291bd2b41a37e6bc72a16990, type: 3}
+  _offsetSprite: {fileID: -1083351207, guid: ea19be4f18eda8744853a04f31a2f272, type: 3}
   _baseColor: {r: 0.16862746, g: 0.14117648, b: 0.40784317, a: 1}
   _offsetColor: {r: 0.015686275, g: 0.003921569, b: 0.039215688, a: 1}
   _renderer: {fileID: 1680807352469362586}

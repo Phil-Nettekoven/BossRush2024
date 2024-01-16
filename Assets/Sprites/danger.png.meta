@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ea19be4f18eda8744853a04f31a2f272
+guid: 3f5873a313443e5459e41fd190f534de
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -162,7 +162,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: stone_tile_light_0
+      name: danger_0
       rect:
         serializedVersion: 2
         x: 0
@@ -176,8 +176,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a4ba7446c797df047a3e77984d50fa64
-      internalID: -1083351207
+      spriteID: 2948f86d6ad2cf34f9c6ca0eae9d6dbd
+      internalID: 1430896781
       vertices: []
       indices: 
       edges: []
@@ -185,7 +185,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 88e9b93b09bcf18458e07b65dfe60fe3
+    spriteID: 42cc6eaecb8b3a346814cd93aa66fa10
     internalID: 0
     vertices: []
     indices: 
@@ -193,7 +193,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      stone_tile_light_0: -1083351207
+      danger_0: 1430896781
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

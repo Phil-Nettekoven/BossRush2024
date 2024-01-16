@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ea19be4f18eda8744853a04f31a2f272
+guid: 918b16b6e61f6f948a88dfec5730ce92
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -162,13 +162,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: stone_tile_light_0
+      name: big_stone_tile_light_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 16
-        height: 16
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -176,8 +176,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a4ba7446c797df047a3e77984d50fa64
-      internalID: -1083351207
+      spriteID: 4ae86507578903b47b75b8f7fcac310b
+      internalID: -677671907
       vertices: []
       indices: 
       edges: []
@@ -185,7 +185,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 88e9b93b09bcf18458e07b65dfe60fe3
+    spriteID: b0fa7b9bf888fb848baa5277b727e034
     internalID: 0
     vertices: []
     indices: 
@@ -193,7 +193,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      stone_tile_light_0: -1083351207
+      big_stone_tile_light_0: -677671907
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
