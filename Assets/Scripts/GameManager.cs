@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     private float timeToMove = 0.05f;
     private float timeToWait = 0.150f;
 
+    private float playerMoveDistance = 1f;
+
     [SerializeField] private GameObject _player;
 
     public void Awake()
@@ -46,20 +48,25 @@ public class GameManager : MonoBehaviour
             }
             if (!isMoving)
             {
+                if (Input.GetKey(KeyCode.Space)){
+                    playerMoveDistance = 2f;
+                } else{
+                    playerMoveDistance = 1f;
+                }
                 if ((Input.GetKey(KeyCode.W)) || (Input.GetKey(KeyCode.UpArrow))) {
-                    StartCoroutine(Move(_player, Vector3.up, 1f));
+                    StartCoroutine(Move(_player, Vector3.up, playerMoveDistance));
                 }
                 if ((Input.GetKey(KeyCode.A)) || (Input.GetKey(KeyCode.LeftArrow)))
                 {
-                    StartCoroutine(Move(_player, Vector3.left, 1f));
+                    StartCoroutine(Move(_player, Vector3.left, playerMoveDistance));
                 }
                 if ((Input.GetKey(KeyCode.S)) || (Input.GetKey(KeyCode.DownArrow)))
                 {
-                    StartCoroutine(Move(_player, Vector3.down, 1f));
+                    StartCoroutine(Move(_player, Vector3.down, playerMoveDistance));
                 }
                 if ((Input.GetKey(KeyCode.D)) || (Input.GetKey(KeyCode.RightArrow)))
                 {
-                    StartCoroutine(Move(_player, Vector3.right, 1f));
+                    StartCoroutine(Move(_player, Vector3.right, playerMoveDistance));
                 }
             }
         }
@@ -90,12 +97,6 @@ public class GameManager : MonoBehaviour
     public IEnumerator Move(GameObject gameObject, Vector3 direction, float distance)
     {
 
-        if (gameObject == _player)
-        {
-            isMoving = true;
-            SendSignalMove();
-        }
-
         Vector3 origPos, targetPos;
 
         bool hitWall = false;
@@ -105,17 +106,29 @@ public class GameManager : MonoBehaviour
         targetPos = origPos + (direction * distance);
 
         int raycastLength = 1;
+        int divisor = (distance == 2f) ? divisor = 1 : divisor = 2;
+        Debug.DrawRay(origPos + direction, direction, Color.green, 2);
         RaycastHit2D hit;
-        if (hit = Physics2D.Raycast(origPos + direction, direction, raycastLength/2))
+        
+        if (hit = Physics2D.Raycast(origPos + direction, direction, raycastLength/divisor))
         {
             print(hit.collider.gameObject.tag);
-            Debug.DrawRay(origPos, direction, Color.green, 2);
             if (hit.collider.gameObject.tag == "Wall")
             {
+                if (Vector3.Distance(gameObject.transform.position, hit.collider.gameObject.transform.position) > 1){
+                    StartCoroutine(Move(gameObject, direction, distance - 1));
+                    yield break;
+                }
                 print("inga hunga");
                 
                 hitWall = true;
             }
+        }
+
+        if (gameObject == _player)
+        {
+            isMoving = true;
+            SendSignalMove();
         }
 
         while (elapsedTime < timeToMove)

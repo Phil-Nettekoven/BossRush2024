@@ -47,11 +47,11 @@ public class Tile : MonoBehaviour
     {
 
 
-            if (Input.GetKeyDown("space"))
+            if (Input.GetKey(KeyCode.LeftControl))
             {
                 _renderer.color = Color.clear;
             }
-            else if (Input.GetKeyUp("space"))
+            else
             {
                 _renderer.color = _isOffset ? _offsetColor : _baseColor;
             }
