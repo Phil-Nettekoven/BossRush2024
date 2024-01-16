@@ -99,26 +99,20 @@ public class EnemyGridMovement : MonoBehaviour
             playerFound = true;
             if (playerDistance <= attackDistance) //add attack to movement queue
             {
-                queuedMoves.Enqueue(_gm.GenerateKeyPair("attack1", 1));
-                queuedMoves.Enqueue(_gm.GenerateKeyPair("attack1", 2));
-                queuedMoves.Enqueue(_gm.GenerateKeyPair("attack1", 3));
-                queuedMoves.Enqueue(_gm.GenerateKeyPair("attack1", 4));
-                queuedMoves.Enqueue(_gm.GenerateKeyPair("attack1", 5));
-                queuedMoves.Enqueue(_gm.GenerateKeyPair("attack1", 6));
-                queuedMoves.Enqueue(_gm.GenerateKeyPair("attack1", 7));
-                queuedMoves.Enqueue(_gm.GenerateKeyPair("attack1", 8));
-                queuedMoves.Enqueue(_gm.GenerateKeyPair("attack1", 9));
+                for (int i = 0; i < 9; i++){
+                    queuedMoves.Enqueue(_gm.GenerateKeyPair("attack1", i));
+                }
             }
             else if (chaseCounter > 5 && playerDistance <= teleportDistance) //long ranged attack for when player keeps running
             {
                 chaseCounter = 0;
-                queuedMoves.Enqueue(_gm.GenerateKeyPair("attack2", 1));
-                queuedMoves.Enqueue(_gm.GenerateKeyPair("attack2", 2));
-                queuedMoves.Enqueue(_gm.GenerateKeyPair("attack2", 3));
+                for (int i = 0; i < 3; i++){
+                    queuedMoves.Enqueue(_gm.GenerateKeyPair("attack2", i));
+                }
             }
             else if (playerDistance >= teleportDistance)
             {
-                print("unga bunga");
+                //print("unga bunga");
                 teleportPos = playerPos;
                 teleportPos.x += Random.Range(1, 5);
                 teleportPos.y += Random.Range(1, 5);

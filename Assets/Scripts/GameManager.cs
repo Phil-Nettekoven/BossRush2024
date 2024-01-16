@@ -10,12 +10,14 @@ public class GameManager : MonoBehaviour
     private static GameManager _instance;
     public static GameManager Instance { get { return _instance; } }
     public bool _pauseGame;
-    public int _moveCount;
+    public int _moveCount = 0;
     private bool isMoving = false;
-    private float timeToMove = 0.05f;
-    private float timeToWait = 0.150f;
-
+    const float timeToMove = 0.05f;
+    const float timeToWait = 0.150f;
     private float playerMoveDistance = 1f;
+    const int rollCoolDown = 5;
+    private int rollTimer;
+
 
     [SerializeField] private GameObject _player;
 
@@ -30,7 +32,6 @@ public class GameManager : MonoBehaviour
             {
                 Destroy(gameObject);
             }
-            _moveCount = 0;
         }
     private void Update()
     {
@@ -48,7 +49,7 @@ public class GameManager : MonoBehaviour
             }
             if (!isMoving)
             {
-                if (Input.GetKey(KeyCode.Space)){
+                if (Input.GetKey(KeyCode.Space) && rollTimer <= 0){
                     playerMoveDistance = 2f;
                 } else{
                     playerMoveDistance = 1f;
@@ -87,6 +88,7 @@ public class GameManager : MonoBehaviour
     public void SendSignalMove()
     {
         BroadcastMessage("NextMove");
+        _moveCount += 1;
     }
 
     public KeyValuePair<string, int> GenerateKeyPair(string str, int integer)
@@ -97,17 +99,24 @@ public class GameManager : MonoBehaviour
     public IEnumerator Move(GameObject gameObject, Vector3 direction, float distance)
     {
 
-        Vector3 origPos, targetPos;
 
+        Vector3 origPos, targetPos;
         bool hitWall = false;
         float elapsedTime = 0;
+        
+        int raycastLength = 1;
+
+        if (gameObject == _player && rollTimer > 0){
+            distance = 1f;
+            rollTimer -= 1;
+        }
+
+        int divisor = (distance == 2f) ? divisor = 1 : divisor = 2;
 
         origPos = gameObject.transform.position;
         targetPos = origPos + (direction * distance);
 
-        int raycastLength = 1;
-        int divisor = (distance == 2f) ? divisor = 1 : divisor = 2;
-        Debug.DrawRay(origPos + direction, direction, Color.green, 2);
+        //Debug.DrawRay(origPos + direction, direction, Color.green, 2);
         RaycastHit2D hit;
         
         if (hit = Physics2D.Raycast(origPos + direction, direction, raycastLength/divisor))
@@ -115,7 +124,7 @@ public class GameManager : MonoBehaviour
             print(hit.collider.gameObject.tag);
             if (hit.collider.gameObject.tag == "Wall")
             {
-                if (Vector3.Distance(gameObject.transform.position, hit.collider.gameObject.transform.position) > 1){
+                if (Vector3.Distance(gameObject.transform.position, hit.collider.gameObject.transform.position) > 1){ //check if distance > 1 unit, try next closest tile.
                     StartCoroutine(Move(gameObject, direction, distance - 1));
                     yield break;
                 }
@@ -127,6 +136,9 @@ public class GameManager : MonoBehaviour
 
         if (gameObject == _player)
         {
+            if (distance > 1f && rollTimer <= 0){
+                rollTimer = rollCoolDown;
+            }
             isMoving = true;
             SendSignalMove();
         }
