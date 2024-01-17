@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: d05ce441bc2a56d4d8cd48ddf9641a37
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _petah: {fileID: -315911243, guid: 5a5f23f572b8ebc4c8de9556c38fd0f8, type: 3}
+  - _cloak: {fileID: -1409220505, guid: a17dc10b08e636940b659808b0c0edc6, type: 3}
+  - _mask1: {fileID: 426889203, guid: 4f5650dcf36fe4a46b3211034ba6df10, type: 3}
+  - _mask2: {fileID: -657316549, guid: 33b6ed99840a0644f8cf8240f85f2a7a, type: 3}
+  - _mask3: {fileID: -245989803, guid: 4923689ac1f1bda44aaa183d9f0a1bad, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
