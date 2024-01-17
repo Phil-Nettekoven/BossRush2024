@@ -21,6 +21,8 @@ public class Boss1 : MonoBehaviour
 
     public GameObject self;
 
+    private Vector3 stompTarget;
+
     private void Awake()
     {
         _gm = GameManager.Instance;
@@ -94,24 +96,24 @@ public class Boss1 : MonoBehaviour
         playerPos = Player.transform.position;
         playerDistance = Vector3.Distance(transform.position, playerPos);
 
-        if (queuedMoves.Peek().Key == "idle" && playerDistance < 5)
+        if (queuedMoves.Count > 0 && queuedMoves.Peek().Key == "idle" && playerDistance < 8)
         { //Player has entered fight radius
             queuedMoves.Clear();
         }
-        else if (queuedMoves.Count > 0)
+        else if (queuedMoves.Count > 0) //dequeue current moves
         {
-            print(queuedMoves.Dequeue().ToString());
+            interpretMove(queuedMoves.Dequeue());
         }
-        else if (playerDistance < 10 && postStompDelay <= 0)
+        else if (postStompDelay <= 0 && playerDistance <= 10) //Add "stomp" attack to queue
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 15; i++)
             {
                 queuedMoves.Enqueue(GenerateKeyPair("stomp", i));
             }
         }
-        else if (postStompDelay > 0 && playerDistance > 10)
+        else if (postStompDelay <= 0 && playerDistance > 10)
         {
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 5; i++)
             {
                 queuedMoves.Enqueue(GenerateKeyPair("ranged1", i));
                 postStompDelay = 0;
@@ -132,7 +134,7 @@ public class Boss1 : MonoBehaviour
                 Stomp(move.Value);
                 break;
             case "ranged1":
-                // code block
+                print("RANGED");
                 break;
             default:
                 print("frick");
@@ -144,12 +146,25 @@ public class Boss1 : MonoBehaviour
     {
         switch (step)
         {
-            case 1:
-                Vector3 attackPos = playerPos;
-                attackPos.z += 10000;
-                transform.position = attackPos;
+            case 0: //Fly into air
+                Vector3 temp = transform.position;
+                temp.z += 10000;
+                transform.position = temp;
                 break;
-            default:
+            case 3: //Telegraph attack (exclamation marker)
+                stompTarget = playerPos;
+                break;
+            case 7: //Crash down (damage on impact zone)
+                transform.position = stompTarget;
+                break;
+            case 10: //shockwave 1 (lesser damage to immediate surroundings)
+                break;
+            case 12: //shockwave 2 (lesser lesser damage to further surroundings)
+                break;
+            case 14: //end
+                postStompDelay = 15;
+                break;
+            default: //do nothing
                 break;
         }
     }
@@ -159,78 +174,6 @@ public class Boss1 : MonoBehaviour
         return new KeyValuePair<string, int>(str, integer);
     }
 
-    public IEnumerator Move(Vector3 direction, float distance)
-    {
-        Vector3 origPos, targetPos;
-        bool hitWall = false;
-        float elapsedTime = 0;
-
-        int raycastLength = 1;
-
-        Quaternion origRot, targetRot;
-
-        int divisor = (distance == 2f) ? divisor = 1 : divisor = 2;
-
-        origPos = gameObject.transform.position;
-        targetPos = origPos + (direction * distance);
-
-        origRot = gameObject.transform.rotation;
-        targetRot = origRot * Quaternion.Euler(0, 0, 360);
-
-        //Debug.DrawRay(origPos + direction, direction, Color.green, 2);
-        RaycastHit2D hit;
-
-        if (hit = Physics2D.Raycast(origPos + direction, direction, raycastLength / divisor))
-        {
-            print(hit.collider.gameObject.tag);
-            if (hit.collider.gameObject.tag == "Wall")
-            {
-                if (Vector3.Distance(gameObject.transform.position, hit.collider.gameObject.transform.position) > 1)
-                { //check if distance > 1 unit, try next closest tile.
-                    StartCoroutine(Move(direction, distance - 1));
-                    yield break;
-                }
-                hitWall = true;
-            }
-        }
-
-        while (elapsedTime < timeToMove)
-        {
-            if (!hitWall) gameObject.transform.position = Vector3.Lerp(origPos, targetPos, (elapsedTime / timeToMove));
-            if (distance == 2f) //spiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiin
-            {
-                float rollDegrees;
-                if (direction == Vector3.left || direction == Vector3.down) rollDegrees = 360f;
-                else rollDegrees = -360f;
-                float rot = Mathf.Lerp(0, rollDegrees, (elapsedTime / timeToMove + timeToWait));
-                gameObject.transform.rotation = Quaternion.Euler(0, 0, rot);
-            }
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        if (!hitWall) gameObject.transform.position = targetPos; //this line prevents tiny offsets from adding up after many movements, keeping player on grid
-        if (distance == 2) gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
-
-        while (elapsedTime < (timeToMove + timeToWait))
-        {
-
-            //this block doesn't have to be here but it makes spiiiiiiiiiiin look a bit better in exchange for terrible optimization (gives extra time to spiiin)
-            //DON'T FORGET if we decide to remove it to delete "+ timeToWait" in twin block above
-            if (distance == 2f)
-            {
-                float rollDegrees;
-                if (direction == Vector3.left || direction == Vector3.down) rollDegrees = 360f;
-                else rollDegrees = -360f;
-                float rot = Mathf.Lerp(0, rollDegrees, (elapsedTime / timeToMove + timeToWait));
-                gameObject.transform.rotation = Quaternion.Euler(0, 0, rot);
-            }
-
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-    }
 }
 
 
