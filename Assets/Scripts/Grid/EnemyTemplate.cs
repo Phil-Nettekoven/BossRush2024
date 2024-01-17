@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Search;
+//using UnityEditor.Search;
 using UnityEngine;
 
-public class EnemyGridMovement : MonoBehaviour
+public class EnemyTemplate : MonoBehaviour
 {
     private Vector3 playerPos, teleportPos;
     
@@ -100,14 +100,14 @@ public class EnemyGridMovement : MonoBehaviour
             if (playerDistance <= attackDistance) //add attack to movement queue
             {
                 for (int i = 0; i < 9; i++){
-                    queuedMoves.Enqueue(_gm.GenerateKeyPair("attack1", i));
+                    queuedMoves.Enqueue(GenerateKeyPair("attack1", i));
                 }
             }
             else if (chaseCounter > 5 && playerDistance <= teleportDistance) //long ranged attack for when player keeps running
             {
                 chaseCounter = 0;
                 for (int i = 0; i < 3; i++){
-                    queuedMoves.Enqueue(_gm.GenerateKeyPair("attack2", i));
+                    queuedMoves.Enqueue(GenerateKeyPair("attack2", i));
                 }
             }
             else if (playerDistance >= teleportDistance)
@@ -125,6 +125,12 @@ public class EnemyGridMovement : MonoBehaviour
                 StartCoroutine(GameManager.Instance.Move(self, findBestMove(playerPos), 1f));
             }
         }
+    }
+
+    
+    public KeyValuePair<string, int> GenerateKeyPair(string str, int integer)
+    {
+        return new KeyValuePair<string, int>(str, integer);
     }
 }
 

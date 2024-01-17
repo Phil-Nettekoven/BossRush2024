@@ -18,27 +18,40 @@ public class GameManager : MonoBehaviour
     const int rollCoolDown = 5;
     private int rollTimer;
 
+    private List<MonoBehaviour> monoList = new List<MonoBehaviour>();
+
+
+    void BroadcastMessageExt(string methodName)
+    {
+        GetComponentsInChildren<MonoBehaviour>(true, monoList);
+        for (int i = 0; i < monoList.Count; i++)
+        {
+            monoList[i].Invoke(methodName, 0);
+        }
+    }
+
 
     [SerializeField] private GameObject _player;
 
     public void Awake()
+    {
+        QualitySettings.vSyncCount = 120;
+        if (_instance == null)
         {
-            if (_instance == null)
-            {
-                _instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
         }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     private void Update()
     {
         {
-            if(Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
-                if(!_pauseGame)
+                if (!_pauseGame)
                 {
                     PauseGame();
                 }
@@ -49,12 +62,16 @@ public class GameManager : MonoBehaviour
             }
             if (!isMoving)
             {
-                if (Input.GetKey(KeyCode.Space) && rollTimer <= 0){
+                if (Input.GetKey(KeyCode.Space) && rollTimer <= 0)
+                {
                     playerMoveDistance = 2f;
-                } else{
+                }
+                else
+                {
                     playerMoveDistance = 1f;
                 }
-                if ((Input.GetKey(KeyCode.W)) || (Input.GetKey(KeyCode.UpArrow))) {
+                if ((Input.GetKey(KeyCode.W)) || (Input.GetKey(KeyCode.UpArrow)))
+                {
                     StartCoroutine(Move(_player, Vector3.up, playerMoveDistance));
                 }
                 if ((Input.GetKey(KeyCode.A)) || (Input.GetKey(KeyCode.LeftArrow)))
@@ -87,13 +104,8 @@ public class GameManager : MonoBehaviour
 
     public void SendSignalMove()
     {
-        BroadcastMessage("NextMove");
+        this.BroadcastMessage("NextMove", null, SendMessageOptions.DontRequireReceiver);
         _moveCount += 1;
-    }
-
-    public KeyValuePair<string, int> GenerateKeyPair(string str, int integer)
-    {
-        return new KeyValuePair<string, int>(str, integer);
     }
 
     public IEnumerator Move(GameObject gameObject, Vector3 direction, float distance)
@@ -101,12 +113,13 @@ public class GameManager : MonoBehaviour
         Vector3 origPos, targetPos;
         bool hitWall = false;
         float elapsedTime = 0;
-        
+
         int raycastLength = 1;
 
         Quaternion origRot, targetRot;
 
-        if (gameObject == _player && rollTimer > 0){
+        if (gameObject == _player && rollTimer > 0)
+        {
             distance = 1f;
             rollTimer -= 1;
         }
@@ -117,27 +130,29 @@ public class GameManager : MonoBehaviour
         targetPos = origPos + (direction * distance);
 
         origRot = gameObject.transform.rotation;
-        targetRot = origRot * Quaternion.Euler(0,0, 360);
+        targetRot = origRot * Quaternion.Euler(0, 0, 360);
 
         //Debug.DrawRay(origPos + direction, direction, Color.green, 2);
         RaycastHit2D hit;
-        
-        if (hit = Physics2D.Raycast(origPos + direction, direction, raycastLength/divisor))
+
+        if (hit = Physics2D.Raycast(origPos + direction, direction, raycastLength / divisor))
         {
             print(hit.collider.gameObject.tag);
             if (hit.collider.gameObject.tag == "Wall")
             {
-                if (Vector3.Distance(gameObject.transform.position, hit.collider.gameObject.transform.position) > 1){ //check if distance > 1 unit, try next closest tile.
+                if (Vector3.Distance(gameObject.transform.position, hit.collider.gameObject.transform.position) > 1)
+                { //check if distance > 1 unit, try next closest tile.
                     StartCoroutine(Move(gameObject, direction, distance - 1));
                     yield break;
-                }                
+                }
                 hitWall = true;
             }
         }
 
         if (gameObject == _player)
         {
-            if (distance > 1f && rollTimer <= 0){
+            if (distance > 1f && rollTimer <= 0)
+            {
                 rollTimer = rollCoolDown;
             }
             isMoving = true;
@@ -159,7 +174,7 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        if(!hitWall) gameObject.transform.position = targetPos; //this line prevents tiny offsets from adding up after many movements, keeping player on grid
+        if (!hitWall) gameObject.transform.position = targetPos; //this line prevents tiny offsets from adding up after many movements, keeping player on grid
         if (distance == 2) gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
 
         while (elapsedTime < (timeToMove + timeToWait))

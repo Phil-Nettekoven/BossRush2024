@@ -12,7 +12,7 @@ public class Tile : MonoBehaviour
     [SerializeField] private GameObject _highlight;
     [SerializeField] private bool _isOffset;
 
-  
+
     private GameManager _gm;
 
     private void Awake()
@@ -52,12 +52,12 @@ public class Tile : MonoBehaviour
     {
 
 
-            if (Input.GetKey(KeyCode.LeftControl))
-            {
-                //_renderer.color = Color.clear;
-            }
-            else
-            {
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            //_renderer.color = Color.clear;
+        }
+        else
+        {
             //_renderer.color = _isOffset ? _offsetColor : _baseColor;
             this.gameObject.GetComponent<SpriteRenderer>().sprite = _isOffset ? _offsetSprite : _baseSprite;
         }
@@ -66,10 +66,10 @@ public class Tile : MonoBehaviour
 
     void OnMouseEnter()
     {
-        if(_gm._pauseGame == false)
+        if (_gm._pauseGame == false)
         {
             _highlight.SetActive(true);
-        }  
+        }
     }
 
     void OnMouseExit()
