@@ -9,9 +9,12 @@ public class GridManager : MonoBehaviour
 
     [SerializeField] private Tile _tilePrefab;
 
+    [SerializeField] private Wall _wallPrefab;
+
     [SerializeField] private Transform _cam;
 
     private Dictionary<Vector2, Tile> _tiles;
+    private Dictionary<Vector2, Wall> _walls;
 
     void Start()
     {
@@ -21,18 +24,29 @@ public class GridManager : MonoBehaviour
     void GenerateGrid()
     {
         _tiles = new Dictionary<Vector2, Tile>();
+        _walls = new Dictionary<Vector2, Wall>();
         for (int x = 0; x < _width; x++)
         {
             for (int y = 0; y < _height; y++)
             {
-                var spawnedTile = Instantiate(_tilePrefab, new Vector3(x, y), Quaternion.identity);
-                spawnedTile.name = $"Tile {x} {y}";
+                //print("x "+ x + "y " + y);
+                if (x == 0 || x == _width-1 || y == 0 || y == _height-1)
+                {
+                    var spawnedWall = Instantiate(_wallPrefab, new Vector3(x, y, -0.1f), Quaternion.identity);
+                    spawnedWall.name = $"Wall {x} {y}";
+                    _walls[new Vector2(x, y)] = spawnedWall;
+                }
+                else
+                {
+                    var spawnedTile = Instantiate(_tilePrefab, new Vector3(x, y), Quaternion.identity);
+                    spawnedTile.name = $"Tile {x} {y}";
 
-                var isOffset = (x % 2 == 0 && y % 2 != 0) || (x % 2 != 0 && y % 2 == 0);
-                spawnedTile.Init(isOffset);
+                    var isOffset = (x % 2 == 0 && y % 2 != 0) || (x % 2 != 0 && y % 2 == 0);
+                    spawnedTile.Init(isOffset);
 
+                    _tiles[new Vector2(x, y)] = spawnedTile;
+                }
 
-                _tiles[new Vector2(x, y)] = spawnedTile;
             }
         }
 

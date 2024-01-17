@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     public void Awake()
     {
         //_player = Instantiate(PlayerStats, Vector3.zero);
-        QualitySettings.vSyncCount = 240;
+        //Application.targetFrameRate = 60;
         if (_instance == null)
         {
             _instance = this;
