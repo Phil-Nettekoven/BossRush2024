@@ -120,7 +120,7 @@ public class EnemyTemplate : MonoBehaviour
                 teleportPos = playerPos;
                 teleportPos.x += Random.Range(1, 5);
                 teleportPos.y += Random.Range(1, 5);
-                this.transform.position = teleportPos;
+                transform.position = teleportPos;
             }
 
             else //chase player

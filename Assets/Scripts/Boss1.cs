@@ -8,10 +8,7 @@ public class Boss1 : MonoBehaviour
     private Vector3 playerPos, teleportPos;
 
     private float playerDistance;
-    private readonly double chaseDistance = 7.5;
-    private readonly double attackDistance = 3.5;
-    private readonly double teleportDistance = 15.5;
-    private int chaseCounter = 0;
+    private int postStompDelay = 3;
     const float timeToMove = 0.15f;
     const float timeToWait = 0.05f;
 
@@ -29,6 +26,10 @@ public class Boss1 : MonoBehaviour
         _gm = GameManager.Instance;
         Player = GameObject.Find("Player");
         queuedMoves = new Queue<KeyValuePair<string, int>>();
+        for (int i = 0; i < 10; i++)
+        { //boss does nothing for 10 turns
+            queuedMoves.Enqueue(GenerateKeyPair("idle", i));
+        }
     }
 
     void Update()
@@ -91,53 +92,74 @@ public class Boss1 : MonoBehaviour
     {
         //print(queuedMoves.Count);
         playerPos = Player.transform.position;
-        playerDistance = Vector3.Distance(this.transform.position, playerPos);
-        if (queuedMoves.Count > 0)
+        playerDistance = Vector3.Distance(transform.position, playerPos);
+
+        if (queuedMoves.Peek().Key == "idle" && playerDistance < 5)
+        { //Player has entered fight radius
+            queuedMoves.Clear();
+        }
+        else if (queuedMoves.Count > 0)
         {
             print(queuedMoves.Dequeue().ToString());
         }
-        else if ((playerDistance <= chaseDistance) || playerFound) //Enemy is idle and player is within chaseDistance OR player has been previously found
+        else if (playerDistance < 10 && postStompDelay <= 0)
         {
-            playerFound = true;
-            if (playerDistance <= attackDistance) //add attack to movement queue
+            for (int i = 0; i < 5; i++)
             {
-                for (int i = 0; i < 9; i++)
-                {
-                    queuedMoves.Enqueue(GenerateKeyPair("attack1", i));
-                }
+                queuedMoves.Enqueue(GenerateKeyPair("stomp", i));
             }
-            else if (chaseCounter > 5 && playerDistance <= teleportDistance) //long ranged attack for when player keeps running
+        }
+        else if (postStompDelay > 0 && playerDistance > 10)
+        {
+            for (int i = 0; i < 7; i++)
             {
-                chaseCounter = 0;
-                for (int i = 0; i < 3; i++)
-                {
-                    queuedMoves.Enqueue(GenerateKeyPair("attack2", i));
-                }
+                queuedMoves.Enqueue(GenerateKeyPair("ranged1", i));
+                postStompDelay = 0;
             }
-            else if (playerDistance >= teleportDistance)
-            {
-                //print("unga bunga");
-                teleportPos = playerPos;
-                teleportPos.x += Random.Range(1, 5);
-                teleportPos.y += Random.Range(1, 5);
-                this.transform.position = teleportPos;
-            }
-
-            else //chase player
-            {
-                chaseCounter++;
-                StartCoroutine(Move(findBestMove(playerPos), 1f));
-            }
+        }
+        else
+        {
+            postStompDelay -= 1;
         }
     }
 
+    private void interpretMove(KeyValuePair<string, int> move)
+    {
+        switch (move.Key)
+        {
+            case "stomp":
+                print("STOMP");
+                Stomp(move.Value);
+                break;
+            case "ranged1":
+                // code block
+                break;
+            default:
+                print("frick");
+                break;
+        }
+    }
+
+    private void Stomp(int step)
+    {
+        switch (step)
+        {
+            case 1:
+                Vector3 attackPos = playerPos;
+                attackPos.z += 10000;
+                transform.position = attackPos;
+                break;
+            default:
+                break;
+        }
+    }
 
     public KeyValuePair<string, int> GenerateKeyPair(string str, int integer)
     {
         return new KeyValuePair<string, int>(str, integer);
     }
 
-        public IEnumerator Move(Vector3 direction, float distance)
+    public IEnumerator Move(Vector3 direction, float distance)
     {
         Vector3 origPos, targetPos;
         bool hitWall = false;

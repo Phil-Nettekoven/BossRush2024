@@ -29,7 +29,6 @@ public class GridManager : MonoBehaviour
         {
             for (int y = 0; y < _height; y++)
             {
-                //print("x "+ x + "y " + y);
                 if (x == 0 || x == _width-1 || y == 0 || y == _height-1)
                 {
                     var spawnedWall = Instantiate(_wallPrefab, new Vector3(x, y, -0.1f), Quaternion.identity);
@@ -46,7 +45,6 @@ public class GridManager : MonoBehaviour
 
                     _tiles[new Vector2(x, y)] = spawnedTile;
                 }
-
             }
         }
 
