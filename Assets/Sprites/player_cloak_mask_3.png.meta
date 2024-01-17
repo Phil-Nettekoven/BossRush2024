@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 41dda5cdb41b7494b8165db490129446
+guid: 4923689ac1f1bda44aaa183d9f0a1bad
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -162,13 +162,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: big_danger_0
+      name: player_cloak_mask_3_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 1
         y: 0
-        width: 32
-        height: 32
+        width: 14
+        height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -176,8 +176,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 715b0ed4ed41f4b42a63a13f55593def
-      internalID: 1633663842
+      spriteID: 00cea6c1fc4a5ba4eb6018e5c462d440
+      internalID: -245989803
       vertices: []
       indices: 
       edges: []
@@ -185,7 +185,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 8bb631b4d74fd524d8df76f062ad1fbd
+    spriteID: e52702f33e77c6340baf5ab0ffc671de
     internalID: 0
     vertices: []
     indices: 
@@ -193,7 +193,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      big_danger_0: 1633663842
+      player_cloak_mask_3_0: -245989803
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
