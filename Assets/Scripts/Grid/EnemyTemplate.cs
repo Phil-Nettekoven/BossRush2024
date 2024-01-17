@@ -6,13 +6,15 @@ using UnityEngine;
 public class EnemyTemplate : MonoBehaviour
 {
     private Vector3 playerPos, teleportPos;
-    
+
     private float playerDistance;
     private readonly double chaseDistance = 7.5;
     private readonly double attackDistance = 3.5;
     private readonly double teleportDistance = 15.5;
     private int chaseCounter = 0;
-    
+    const float timeToMove = 0.15f;
+    const float timeToWait = 0.05f;
+
     private bool playerFound = false;
 
     private GameManager _gm;
@@ -99,14 +101,16 @@ public class EnemyTemplate : MonoBehaviour
             playerFound = true;
             if (playerDistance <= attackDistance) //add attack to movement queue
             {
-                for (int i = 0; i < 9; i++){
+                for (int i = 0; i < 9; i++)
+                {
                     queuedMoves.Enqueue(GenerateKeyPair("attack1", i));
                 }
             }
             else if (chaseCounter > 5 && playerDistance <= teleportDistance) //long ranged attack for when player keeps running
             {
                 chaseCounter = 0;
-                for (int i = 0; i < 3; i++){
+                for (int i = 0; i < 3; i++)
+                {
                     queuedMoves.Enqueue(GenerateKeyPair("attack2", i));
                 }
             }
@@ -122,15 +126,88 @@ public class EnemyTemplate : MonoBehaviour
             else //chase player
             {
                 chaseCounter++;
-                StartCoroutine(GameManager.Instance.Move(self, findBestMove(playerPos), 1f));
+                StartCoroutine(Move(findBestMove(playerPos), 1f));
             }
         }
     }
 
-    
+
     public KeyValuePair<string, int> GenerateKeyPair(string str, int integer)
     {
         return new KeyValuePair<string, int>(str, integer);
+    }
+
+        public IEnumerator Move(Vector3 direction, float distance)
+    {
+        Vector3 origPos, targetPos;
+        bool hitWall = false;
+        float elapsedTime = 0;
+
+        int raycastLength = 1;
+
+        Quaternion origRot, targetRot;
+
+        int divisor = (distance == 2f) ? divisor = 1 : divisor = 2;
+
+        origPos = gameObject.transform.position;
+        targetPos = origPos + (direction * distance);
+
+        origRot = gameObject.transform.rotation;
+        targetRot = origRot * Quaternion.Euler(0, 0, 360);
+
+        //Debug.DrawRay(origPos + direction, direction, Color.green, 2);
+        RaycastHit2D hit;
+
+        if (hit = Physics2D.Raycast(origPos + direction, direction, raycastLength / divisor))
+        {
+            print(hit.collider.gameObject.tag);
+            if (hit.collider.gameObject.tag == "Wall")
+            {
+                if (Vector3.Distance(gameObject.transform.position, hit.collider.gameObject.transform.position) > 1)
+                { //check if distance > 1 unit, try next closest tile.
+                    StartCoroutine(Move(direction, distance - 1));
+                    yield break;
+                }
+                hitWall = true;
+            }
+        }
+
+        while (elapsedTime < timeToMove)
+        {
+            if (!hitWall) gameObject.transform.position = Vector3.Lerp(origPos, targetPos, (elapsedTime / timeToMove));
+            if (distance == 2f) //spiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiin
+            {
+                float rollDegrees;
+                if (direction == Vector3.left || direction == Vector3.down) rollDegrees = 360f;
+                else rollDegrees = -360f;
+                float rot = Mathf.Lerp(0, rollDegrees, (elapsedTime / timeToMove + timeToWait));
+                gameObject.transform.rotation = Quaternion.Euler(0, 0, rot);
+            }
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        if (!hitWall) gameObject.transform.position = targetPos; //this line prevents tiny offsets from adding up after many movements, keeping player on grid
+        if (distance == 2) gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+
+        while (elapsedTime < (timeToMove + timeToWait))
+        {
+
+            //this block doesn't have to be here but it makes spiiiiiiiiiiin look a bit better in exchange for terrible optimization (gives extra time to spiiin)
+            //DON'T FORGET if we decide to remove it to delete "+ timeToWait" in twin block above
+            if (distance == 2f)
+            {
+                float rollDegrees;
+                if (direction == Vector3.left || direction == Vector3.down) rollDegrees = 360f;
+                else rollDegrees = -360f;
+                float rot = Mathf.Lerp(0, rollDegrees, (elapsedTime / timeToMove + timeToWait));
+                gameObject.transform.rotation = Quaternion.Euler(0, 0, rot);
+            }
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
     }
 }
 
