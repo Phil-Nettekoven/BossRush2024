@@ -31,8 +31,8 @@ public class Boss1 : MonoBehaviour
         Player = GameObject.Find("Player");
         MainCamera = GameObject.Find("Main Camera");
         queuedMoves = new Queue<KeyValuePair<string, int>>();
-        for (int i = 0; i < 10; i++)
-        { //boss does nothing for 10 turns
+        for (int i = 0; i < 20; i++)
+        { //boss does nothing for i turns
             queuedMoves.Enqueue(GenerateKeyPair("idle", i));
         }
     }
@@ -107,14 +107,14 @@ public class Boss1 : MonoBehaviour
         {
             interpretMove(queuedMoves.Dequeue());
         }
-        else if (postStompDelay <= 0 && playerDistance <= 10) //Add "stomp" attack to queue
+        else if (postStompDelay <= 0 && playerDistance <= 15) //Add "stomp" attack to queue
         {
             for (int i = 0; i < 15; i++)
             {
                 queuedMoves.Enqueue(GenerateKeyPair("stomp", i));
             }
         }
-        else if (postStompDelay <= 0 && playerDistance > 10)
+        else if (postStompDelay <= 0 && playerDistance > 15)
         {
             for (int i = 0; i < 5; i++)
             {

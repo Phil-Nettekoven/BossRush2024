@@ -955,11 +955,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1701938633
+  m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.6431373, g: 0.6431373, b: 0.16078432, a: 1}
+  m_Sprite: {fileID: 1306930365, guid: 2b731dda788dc3a4aaaed81d3cac6d14, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -978,8 +978,8 @@ Transform:
   m_GameObject: {fileID: 388678659}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 17, y: 17, z: -0.1}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalPosition: {x: 17, y: 17, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1830585505}
@@ -1024,6 +1024,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Player: {fileID: 0}
+  MainCamera: {fileID: 0}
   self: {fileID: 388678659}
 --- !u!1 &416086419 stripped
 GameObject:
@@ -1272,6 +1273,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1474907092236756712, guid: 0b64935c5439918418e0a8a02f986ccd, type: 3}
+      propertyPath: m_SortingLayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474907092236756712, guid: 0b64935c5439918418e0a8a02f986ccd, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 1073294933
+      objectReference: {fileID: 0}
     - target: {fileID: 7402790293595860822, guid: 0b64935c5439918418e0a8a02f986ccd, type: 3}
       propertyPath: m_Name
       value: Player
@@ -1286,7 +1295,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7695100535560546461, guid: 0b64935c5439918418e0a8a02f986ccd, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7695100535560546461, guid: 0b64935c5439918418e0a8a02f986ccd, type: 3}
       propertyPath: m_LocalRotation.w

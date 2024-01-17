@@ -31,7 +31,7 @@ public class GridManager : MonoBehaviour
             {
                 if (x == 0 || x == _width-1 || y == 0 || y == _height-1)
                 {
-                    var spawnedWall = Instantiate(_wallPrefab, new Vector3(x, y, -0.1f), Quaternion.identity);
+                    var spawnedWall = Instantiate(_wallPrefab, new Vector3(x, y), Quaternion.identity);
                     spawnedWall.name = $"Wall {x} {y}";
                     _walls[new Vector2(x, y)] = spawnedWall;
                 }
