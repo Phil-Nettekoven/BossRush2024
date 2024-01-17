@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
@@ -18,9 +20,17 @@ public class PlayerStats : MonoBehaviour
     const float timeToWait = 0.05f;
 
     private bool isMoving;
+
+    private bool isFacingRight = true;
+    private bool flippedRight = false;
+    private bool flippedLeft = false;
+
+    [SerializeField] private Sprite _petah, _cloak, _mask1, _mask2, _mask3;
+
     void Start()
     {
         _gm = GameManager.Instance;
+        setSprite(_petah);
     }
 
     // Update is called once per frame
@@ -63,8 +73,6 @@ public class PlayerStats : MonoBehaviour
 
         int raycastLength = 1;
 
-        Quaternion origRot, targetRot;
-
         if (rollTimer > 0)
         {
             distance = 1f;
@@ -75,9 +83,6 @@ public class PlayerStats : MonoBehaviour
 
         origPos = gameObject.transform.position;
         targetPos = origPos + (direction * distance);
-
-        origRot = gameObject.transform.rotation;
-        targetRot = origRot * Quaternion.Euler(0, 0, 360);
 
         //Debug.DrawRay(origPos + direction, direction, Color.green, 2);
         RaycastHit2D hit;
@@ -96,7 +101,6 @@ public class PlayerStats : MonoBehaviour
             }
         }
 
-
         if (distance > 1f && rollTimer <= 0)
         {
             rollTimer = rollCoolDown;
@@ -104,24 +108,61 @@ public class PlayerStats : MonoBehaviour
         isMoving = true;
         _gm.SendSignalMove();
 
-
         while (elapsedTime < timeToMove)
         {
             if (!hitWall) gameObject.transform.position = Vector3.Lerp(origPos, targetPos, elapsedTime / timeToMove);
             if (distance == 2f) //spiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiin
             {
                 float rollDegrees;
-                if (direction == Vector3.left || direction == Vector3.down) rollDegrees = 360f;
-                else rollDegrees = -360f;
-                float rot = Mathf.Lerp(0, rollDegrees, elapsedTime / timeToMove + timeToWait);
-                gameObject.transform.rotation = Quaternion.Euler(0, 0, rot);
+                if (direction == Vector3.left && isFacingRight == true) rollDegrees = 360f; 
+                else if (direction == Vector3.right && isFacingRight == false) rollDegrees = 360f; 
+                else rollDegrees = -360f; 
+
+                float yAngle = gameObject.transform.eulerAngles.y;
+                float rotZ = Mathf.Lerp(0, rollDegrees, elapsedTime / timeToMove + timeToWait);
+                gameObject.transform.rotation = Quaternion.Euler(0, yAngle, rotZ);
             }
+            else
+            {
+                float origRot;
+                if (isFacingRight) origRot = 0f;
+                else origRot = 180f;
+
+                float flipToDegree;
+                if (!((direction == Vector3.right && isFacingRight == true) || (direction == Vector3.left && isFacingRight == false)))
+                {
+                    if (direction == Vector3.right && isFacingRight == false) { flipToDegree = 0; flippedRight = true; }
+                    else if (direction == Vector3.left && isFacingRight == true) { flipToDegree = 180; flippedLeft = true; }
+                    else flipToDegree = float.NegativeInfinity;
+
+                    if(flipToDegree != float.NegativeInfinity) {
+                        float rotY = Mathf.Lerp(origRot, flipToDegree, elapsedTime / timeToMove);
+                        gameObject.transform.rotation = Quaternion.Euler(0, rotY, 0);
+                        print(rotY);
+                    }
+                }
+            }
+
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
         if (!hitWall) gameObject.transform.position = targetPos; //this line prevents tiny offsets from adding up after many movements, keeping player on grid
-        if (distance == 2) gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+
+        if (flippedRight)
+        {
+            float zAngle = gameObject.transform.eulerAngles.z;
+            gameObject.transform.rotation = Quaternion.Euler(0, 0, zAngle);
+            isFacingRight = true;
+            flippedRight = false;
+        }
+        if (flippedLeft)
+        {
+            float zAngle = gameObject.transform.eulerAngles.z;
+            gameObject.transform.rotation = Quaternion.Euler(0, 180, zAngle);
+            isFacingRight = false;
+            flippedLeft = false;
+        }
 
         while (elapsedTime < (timeToMove + timeToWait))
         {
@@ -131,16 +172,29 @@ public class PlayerStats : MonoBehaviour
             if (distance == 2f)
             {
                 float rollDegrees;
-                if (direction == Vector3.left || direction == Vector3.down) rollDegrees = 360f;
+                if (direction == Vector3.left && isFacingRight == true) rollDegrees = 360f;
+                else if (direction == Vector3.right && isFacingRight == false) rollDegrees = 360f;
                 else rollDegrees = -360f;
-                float rot = Mathf.Lerp(0, rollDegrees, elapsedTime / timeToMove + timeToWait);
-                gameObject.transform.rotation = Quaternion.Euler(0, 0, rot);
+
+                float yAngle = gameObject.transform.eulerAngles.y;
+                float rotZ = Mathf.Lerp(0, rollDegrees, elapsedTime / timeToMove + timeToWait);
+                gameObject.transform.rotation = Quaternion.Euler(0, yAngle, rotZ);
             }
 
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
+        if (distance == 2f)
+        {
+            float yAngle = gameObject.transform.eulerAngles.y;
+            gameObject.transform.rotation = Quaternion.Euler(0, yAngle, 0);
+        }
         isMoving = false;
+    }
+
+    private void setSprite(Sprite sprite)
+    {
+        this.gameObject.GetComponent<SpriteRenderer>().sprite = sprite;
     }
 }

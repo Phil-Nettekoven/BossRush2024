@@ -651,6 +651,7 @@ MonoBehaviour:
   _width: 32
   _height: 32
   _tilePrefab: {fileID: 2065812796805164166, guid: 9e9f7bb764ab6a042a8a387893c43f74, type: 3}
+  _wallPrefab: {fileID: -5744258797065216429, guid: cdc580c12444c0746bf8498549d2c542, type: 3}
   _cam: {fileID: 1670562907}
 --- !u!4 &326876126
 Transform:
@@ -1207,7 +1208,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 849447565}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 15, y: 2, z: -0.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1303,6 +1304,11 @@ MonoBehaviour:
   _playerMP: 100
   _playerSoul: 100
   _playerDmg: 50
+  _petah: {fileID: -315911243, guid: 5a5f23f572b8ebc4c8de9556c38fd0f8, type: 3}
+  _cloak: {fileID: -1409220505, guid: a17dc10b08e636940b659808b0c0edc6, type: 3}
+  _mask1: {fileID: 426889203, guid: 4f5650dcf36fe4a46b3211034ba6df10, type: 3}
+  _mask2: {fileID: -657316549, guid: 33b6ed99840a0644f8cf8240f85f2a7a, type: 3}
+  _mask3: {fileID: -245989803, guid: 4923689ac1f1bda44aaa183d9f0a1bad, type: 3}
 --- !u!1 &916868611
 GameObject:
   m_ObjectHideFlags: 0
