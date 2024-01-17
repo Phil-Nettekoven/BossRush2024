@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Boss1 : MonoBehaviour
 {
-    private Vector3 playerPos, teleportPos;
+    private Vector3 playerPos;
 
     private float playerDistance;
     private int postStompDelay = 3;
@@ -19,6 +19,8 @@ public class Boss1 : MonoBehaviour
 
     public GameObject Player;
 
+    public GameObject MainCamera;
+
     public GameObject self;
 
     private Vector3 stompTarget;
@@ -27,6 +29,7 @@ public class Boss1 : MonoBehaviour
     {
         _gm = GameManager.Instance;
         Player = GameObject.Find("Player");
+        MainCamera = GameObject.Find("Main Camera");
         queuedMoves = new Queue<KeyValuePair<string, int>>();
         for (int i = 0; i < 10; i++)
         { //boss does nothing for 10 turns
@@ -147,15 +150,15 @@ public class Boss1 : MonoBehaviour
         switch (step)
         {
             case 0: //Fly into air
-                Vector3 temp = transform.position;
-                temp.z += 10000;
-                transform.position = temp;
+                Vector3 temp = Player.transform.position;
+                temp.z = -20;
+                StartCoroutine(JumpUp(temp));
                 break;
             case 3: //Telegraph attack (exclamation marker)
                 stompTarget = playerPos;
                 break;
             case 7: //Crash down (damage on impact zone)
-                transform.position = stompTarget;
+                StartCoroutine(JumpDown(stompTarget));
                 break;
             case 10: //shockwave 1 (lesser damage to immediate surroundings)
                 break;
@@ -167,6 +170,30 @@ public class Boss1 : MonoBehaviour
             default: //do nothing
                 break;
         }
+    }
+
+    private IEnumerator JumpDown(Vector3 targetPos) {
+        float elapsedTime = 0;
+        Vector3 origPos = transform.position;
+        while (elapsedTime < timeToMove){
+            transform.position = Vector3.Lerp(origPos, targetPos, elapsedTime / timeToMove);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        transform.position = targetPos;
+        //yield break;
+    }
+
+    private IEnumerator JumpUp(Vector3 targetPos) {
+        float elapsedTime = 0;
+        Vector3 origPos = transform.position;
+        while (elapsedTime < timeToMove){
+            transform.position = Vector3.Lerp(origPos, targetPos, elapsedTime / timeToMove);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        //transform.position = stompTarget;
+        //yield break;
     }
 
     public KeyValuePair<string, int> GenerateKeyPair(string str, int integer)
