@@ -1,7 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.EditorTools;
 using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
@@ -59,7 +56,7 @@ public class PlayerStats : MonoBehaviour
     public IEnumerator Move(Vector3 direction, float distance)
     {
         isMoving = true;
-        _gm.SendSignalMove();
+        
 
         if (rollTimer > 0) rollTimer -= 1;
         else if (isRolling && rollTimer <= 0) rollTimer = rollCoolDown;
@@ -99,11 +96,12 @@ public class PlayerStats : MonoBehaviour
         RaycastHit2D hit;
         bool hitWall = false;
         int divisor = (isRolling) ? divisor = 1 : divisor = 2;
+        Debug.DrawRay(origPos,direction);
         if (hit = Physics2D.Raycast(origPos + direction, direction, 1 / divisor))
         {
             if (hit.collider.gameObject.tag == "Wall")
             {
-                if (Vector3.Distance(transform.position, hit.collider.gameObject.transform.position) > 1)
+                if (distance > 1 && Vector3.Distance(transform.position, hit.collider.gameObject.transform.position) >= 1)
                 {   
                     //If distance is > 1 unit
                     StartCoroutine(Move(direction, distance - 1)); //Try next closest tile.
@@ -111,6 +109,12 @@ public class PlayerStats : MonoBehaviour
                 }
                 hitWall = true;
             }
+        }
+        _gm.SendSignalMove();
+        
+        if (hitWall) {
+            isMoving = false; 
+            yield break;
         }
 
         while (elapsedTime < timeToMove)
