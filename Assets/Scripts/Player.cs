@@ -43,7 +43,11 @@ public class PlayerStats : MonoBehaviour
                 isRolling = true;
                 playerMoveDistance = 2f;
             }
-            else playerMoveDistance = 1f;
+            else
+            {
+                isRolling = false;
+                playerMoveDistance = 1f;
+            }
 
             //Tell player to move
             if      (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))    StartCoroutine(Move(Vector3.up,    playerMoveDistance));
