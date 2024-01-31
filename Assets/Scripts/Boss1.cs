@@ -133,14 +133,14 @@ public class Boss1 : MonoBehaviour
         switch (move.Key)
         {
             case "stomp":
-                print("STOMP");
+                //print("STOMP");
                 Stomp(move.Value);
                 break;
             case "ranged1":
-                print("RANGED");
+                //print("RANGED");
                 break;
             default:
-                print("frick");
+                //print("frick");
                 break;
         }
     }

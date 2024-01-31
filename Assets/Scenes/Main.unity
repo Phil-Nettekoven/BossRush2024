@@ -250,7 +250,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _debugMenu: {fileID: 1253842439}
-  _playerStats: {fileID: 0}
+  _playerStats: {fileID: 1969256198}
   _HP: {fileID: 312183268}
   _MP: {fileID: 242278924}
   _Soul: {fileID: 1674129187}
@@ -1973,6 +1973,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0b64935c5439918418e0a8a02f986ccd, type: 3}
+--- !u!114 &1969256198 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4801198447399298219, guid: 0b64935c5439918418e0a8a02f986ccd, type: 3}
+  m_PrefabInstance: {fileID: 1969256197}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d05ce441bc2a56d4d8cd48ddf9641a37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1981564268 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6066492236432141746, guid: 06f5e2c2be1f3d946b22e252e7a5dc96, type: 3}
