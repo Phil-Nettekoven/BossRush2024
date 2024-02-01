@@ -9,7 +9,7 @@ public class DebugMenu : MonoBehaviour
     private GameObject _debugMenu;
     private bool _showMenu;
     [SerializeField]
-    private PlayerStats _playerStats;
+    private Player _playerObject;
     [SerializeField]
     private Text _HP, _MP, _Soul, _DMG;
     void Start()
@@ -29,9 +29,9 @@ public class DebugMenu : MonoBehaviour
                 _showMenu = false;
             }
         }
-        _HP.text = "Player HP: " + _playerStats._playerHP;
-        _MP.text = "Player MP: " + _playerStats._playerMP; 
-        _Soul.text = "Player SOUL: " + _playerStats._playerSoul;
-        _DMG.text = "Player DMG: " + _playerStats._playerDmg;
+        _HP.text = "Player HP: " + _playerObject._playerHP;
+        _MP.text = "Player MP: " + _playerObject._playerMP; 
+        _Soul.text = "Player SOUL: " + _playerObject._playerSoul;
+        _DMG.text = "Player DMG: " + _playerObject._playerDmg;
     }
 }

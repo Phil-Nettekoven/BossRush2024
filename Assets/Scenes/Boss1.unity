@@ -250,7 +250,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _debugMenu: {fileID: 1253842439}
-  _playerStats: {fileID: 465439535}
+  _playerObject: {fileID: 465439535}
   _HP: {fileID: 312183268}
   _MP: {fileID: 242278924}
   _Soul: {fileID: 1674129187}

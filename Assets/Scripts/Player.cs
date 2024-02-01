@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class PlayerStats : MonoBehaviour
+public class Player : MonoBehaviour
 {
     public int _playerHP = 100;
     public int _playerMP = 100;
@@ -50,9 +50,9 @@ public class PlayerStats : MonoBehaviour
             }
 
             //Tell player to move
-            if      (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))    StartCoroutine(Move(Vector3.up,    playerMoveDistance));
-            else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))  StartCoroutine(Move(Vector3.left,  playerMoveDistance));
-            else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))  StartCoroutine(Move(Vector3.down,  playerMoveDistance));
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) StartCoroutine(Move(Vector3.up, playerMoveDistance));
+            else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) StartCoroutine(Move(Vector3.left, playerMoveDistance));
+            else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) StartCoroutine(Move(Vector3.down, playerMoveDistance));
             else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) StartCoroutine(Move(Vector3.right, playerMoveDistance));
         }
     }
@@ -60,11 +60,7 @@ public class PlayerStats : MonoBehaviour
     public IEnumerator Move(Vector3 direction, float distance)
     {
         isMoving = true;
-        
-
-        if (rollTimer > 0) rollTimer -= 1;
-        else if (isRolling && rollTimer <= 0) rollTimer = rollCoolDown;
-
+        if (isRolling && rollTimer <= 0) rollTimer = rollCoolDown;
         float elapsedTime = 0;
 
         float origRot = 180f;
@@ -76,14 +72,14 @@ public class PlayerStats : MonoBehaviour
         if (!isRolling && !((direction == Vector3.right && isFacingRight == true) || (direction == Vector3.left && isFacingRight == false)))
         {
             //If not facing same direction as movement and also not rolling
-            if (direction == Vector3.right && isFacingRight == false) 
+            if (direction == Vector3.right && isFacingRight == false)
             {
                 //If player needs to flip right
                 needsToFlip = true;
                 flippingRight = true;
                 //targetRot is already 0, so no need to alter
             }
-            else if (direction == Vector3.left && isFacingRight == true) 
+            else if (direction == Vector3.left && isFacingRight == true)
             {
                 //If player needs to flip left
                 needsToFlip = true;
@@ -100,13 +96,13 @@ public class PlayerStats : MonoBehaviour
         RaycastHit2D hit;
         bool hitWall = false;
         int divisor = (isRolling) ? divisor = 1 : divisor = 2;
-        Debug.DrawRay(origPos,direction);
+        Debug.DrawRay(origPos, direction);
         if (hit = Physics2D.Raycast(origPos + direction, direction, 1 / divisor))
         {
             if (hit.collider.gameObject.tag == "Wall")
             {
                 if (distance > 1 && Vector3.Distance(transform.position, hit.collider.gameObject.transform.position) >= 1)
-                {   
+                {
                     //If distance is > 1 unit
                     StartCoroutine(Move(direction, distance - 1)); //Try next closest tile.
                     yield break;
@@ -114,10 +110,11 @@ public class PlayerStats : MonoBehaviour
                 hitWall = true;
             }
         }
-        _gm.SendSignalMove();
         
-        if (hitWall) {
-            isMoving = false; 
+
+        if (hitWall)
+        {
+            isMoving = false;
             yield break;
         }
 
@@ -140,7 +137,7 @@ public class PlayerStats : MonoBehaviour
                 float zRot = Mathf.Lerp(0, rollDegrees, elapsedTime / timeToMove); //Determine amount to rotate this frame
                 gameObject.transform.rotation = Quaternion.Euler(0, yRot, zRot); //Rotate
             }
-            else if(needsToFlip)
+            else if (needsToFlip)
             {
                 //If player didn't roll and needs to flip
                 float yRot = Mathf.Lerp(origRot, targetRot, elapsedTime / timeToMove); //Determine amount to flip this frame
@@ -167,7 +164,7 @@ public class PlayerStats : MonoBehaviour
                     isFacingRight = true;
                     flippingRight = false; //Reset direction tracker
                 }
-                
+
                 if (flippingLeft)
                 {
                     //If player is flipping to the left
@@ -193,7 +190,8 @@ public class PlayerStats : MonoBehaviour
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-
+        if (rollTimer > 0) rollTimer -= 1;
+        _gm.SendSignalMove();
         isMoving = false; //Movement complete
     }
 

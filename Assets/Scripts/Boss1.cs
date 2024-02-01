@@ -11,9 +11,6 @@ public class Boss1 : MonoBehaviour
     private int postStompDelay = 3;
     const float timeToMove = 0.15f;
     const float timeToWait = 0.05f;
-
-    private bool playerFound = false;
-
     private GameManager _gm;
     private Queue<KeyValuePair<string, int>> queuedMoves;
 
@@ -40,57 +37,6 @@ public class Boss1 : MonoBehaviour
     void Update()
     {
 
-    }
-
-    private Vector3 findBestMove(Vector3 PlayerPosition)
-    {
-        //diff = Player.transform.position - this.transform.position;
-        Vector3 bestMove = this.transform.position;
-        Vector3 currentMove;
-        Vector3 direction = Vector3.zero;
-        for (int i = 0; i < 4; i++)
-        {
-            if (i == 0)
-            {
-                currentMove = this.transform.position + Vector3.up;
-                if (Vector3.Distance(currentMove, PlayerPosition) < Vector3.Distance(bestMove, PlayerPosition))
-                {
-                    bestMove = currentMove;
-                    direction = Vector3.up;
-                }
-            }
-            else if (i == 1)
-            {
-                currentMove = this.transform.position + Vector3.down;
-                if (Vector3.Distance(currentMove, PlayerPosition) < Vector3.Distance(bestMove, PlayerPosition))
-                {
-                    bestMove = currentMove;
-                    direction = Vector3.down;
-                }
-            }
-            else if (i == 2)
-            {
-                currentMove = this.transform.position + Vector3.left;
-                if (Vector3.Distance(currentMove, PlayerPosition) < Vector3.Distance(bestMove, PlayerPosition))
-                {
-                    bestMove = currentMove;
-                    direction = Vector3.left;
-                }
-            }
-            else if (i == 3)
-            {
-                currentMove = this.transform.position + Vector3.right;
-                if (Vector3.Distance(currentMove, PlayerPosition) < Vector3.Distance(bestMove, PlayerPosition))
-                {
-                    bestMove = currentMove;
-                    direction = Vector3.right;
-                }
-            }
-
-
-        }
-
-        return direction;
     }
 
     private void NextMove()
@@ -130,17 +76,15 @@ public class Boss1 : MonoBehaviour
 
     private void interpretMove(KeyValuePair<string, int> move)
     {
+        //print(move.Key);
         switch (move.Key)
         {
             case "stomp":
-                //print("STOMP");
                 Stomp(move.Value);
                 break;
             case "ranged1":
-                //print("RANGED");
                 break;
             default:
-                //print("frick");
                 break;
         }
     }
