@@ -59,6 +59,8 @@ public class Player : MonoBehaviour
 
     public IEnumerator Move(Vector3 direction, float distance)
     {
+        _gm.createDangerTile(gameObject.transform.position, 0, 0);
+        print(isRolling);
         isMoving = true;
         if (isRolling && rollTimer <= 0) rollTimer = rollCoolDown;
         float elapsedTime = 0;
@@ -96,7 +98,7 @@ public class Player : MonoBehaviour
         RaycastHit2D hit;
         bool hitWall = false;
         int divisor = (isRolling) ? divisor = 1 : divisor = 2;
-        Debug.DrawRay(origPos, direction);
+        //Debug.DrawRay(origPos, direction);
         if (hit = Physics2D.Raycast(origPos + direction, direction, 1 / divisor))
         {
             if (hit.collider.gameObject.tag == "Wall")

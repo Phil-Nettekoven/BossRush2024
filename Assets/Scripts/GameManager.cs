@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
     public static GameManager Instance { get { return _instance; } }
+    [SerializeField] private DangerSmall _dangerSmall;
     public bool _pauseGame;
     public int _moveCount = 0;
 
@@ -62,6 +63,12 @@ public class GameManager : MonoBehaviour
     {
         this.BroadcastMessage("NextMove", null, SendMessageOptions.DontRequireReceiver);
         _moveCount += 1;
+    }
+
+    public DangerSmall createDangerTile(Vector2 pos, int delay, int duration){
+        DangerSmall dangerTile = Instantiate(_dangerSmall, pos, Quaternion.identity);
+        dangerTile.Init(delay, duration);
+        return dangerTile;
     }
 
 }
