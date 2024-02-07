@@ -100,6 +100,7 @@ public class Boss1 : MonoBehaviour
                 break;
             case 3: //Telegraph attack (exclamation marker)
                 stompTarget = playerPos;
+                _gm.createDangerTile(stompTarget, 0, 3, 1); //create large danger tile on player position
                 break;
             case 7: //Crash down (damage on impact zone)
                 StartCoroutine(JumpDown(stompTarget));

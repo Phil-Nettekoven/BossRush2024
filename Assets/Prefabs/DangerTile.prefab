@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8715935667840334595}
   - component: {fileID: -3160738213326118217}
   m_Layer: 0
-  m_Name: DangerSmall
+  m_Name: DangerTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73,8 +73,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -939783329
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -100,3 +100,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _dangerSmall: {fileID: 1430896781, guid: 3f5873a313443e5459e41fd190f534de, type: 3}
+  _dangerLarge: {fileID: 1633663842, guid: 41dda5cdb41b7494b8165db490129446, type: 3}

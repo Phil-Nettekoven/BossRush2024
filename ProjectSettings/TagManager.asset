@@ -48,3 +48,6 @@ TagManager:
   - name: Boss
     uniqueID: 1701938633
     locked: 0
+  - name: DangerTiles
+    uniqueID: 3355183967
+    locked: 0
