@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
     }
 
     public DangerSmall createDangerTile(Vector2 pos, int delay, int duration){
-        DangerSmall dangerTile = Instantiate(_dangerSmall, pos, Quaternion.identity);
+        DangerSmall dangerTile = Instantiate(_dangerSmall, pos, Quaternion.identity, this.transform);
         dangerTile.Init(delay, duration);
         return dangerTile;
     }

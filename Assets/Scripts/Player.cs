@@ -59,8 +59,8 @@ public class Player : MonoBehaviour
 
     public IEnumerator Move(Vector3 direction, float distance)
     {
-        _gm.createDangerTile(gameObject.transform.position, 0, 0);
-        print(isRolling);
+        _gm.createDangerTile(gameObject.transform.position, 2, 2);
+        //print(isRolling);
         isMoving = true;
         if (isRolling && rollTimer <= 0) rollTimer = rollCoolDown;
         float elapsedTime = 0;
