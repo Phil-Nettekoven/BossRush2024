@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameObject _player;
 
-    public void Awake()
+    public void Start()
     {
         //_player = Instantiate(PlayerStats, Vector3.zero);
         //Application.targetFrameRate = 60;

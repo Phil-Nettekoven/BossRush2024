@@ -12,6 +12,7 @@ public class Boss1 : MonoBehaviour
     const float timeToMove = 0.15f;
     const float timeToWait = 0.05f;
     private GameManager _gm;
+    private GridManager _gridManager;
     private Queue<KeyValuePair<string, int>> queuedMoves;
 
     public GameObject Player;
@@ -22,11 +23,12 @@ public class Boss1 : MonoBehaviour
 
     private Vector3 stompTarget;
 
-    private void Awake()
+    private void Start()
     {
         _gm = GameManager.Instance;
         Player = GameObject.Find("Player");
         MainCamera = GameObject.Find("Main Camera");
+        _gridManager = GridManager.Instance;
         queuedMoves = new Queue<KeyValuePair<string, int>>();
         for (int i = 0; i < 20; i++)
         { //boss does nothing for i turns
@@ -36,7 +38,7 @@ public class Boss1 : MonoBehaviour
 
     void Update()
     {
-
+        
     }
 
     private void NextMove()
@@ -117,10 +119,12 @@ public class Boss1 : MonoBehaviour
         }
     }
 
-    private IEnumerator JumpDown(Vector3 targetPos) {
+    private IEnumerator JumpDown(Vector3 targetPos)
+    {
         float elapsedTime = 0;
         Vector3 origPos = transform.position;
-        while (elapsedTime < timeToMove){
+        while (elapsedTime < timeToMove)
+        {
             transform.position = Vector3.Lerp(origPos, targetPos, elapsedTime / timeToMove);
             elapsedTime += Time.deltaTime;
             yield return null;
@@ -129,10 +133,12 @@ public class Boss1 : MonoBehaviour
         //yield break;
     }
 
-    private IEnumerator JumpUp(Vector3 targetPos) {
+    private IEnumerator JumpUp(Vector3 targetPos)
+    {
         float elapsedTime = 0;
         Vector3 origPos = transform.position;
-        while (elapsedTime < timeToMove){
+        while (elapsedTime < timeToMove)
+        {
             transform.position = Vector3.Lerp(origPos, targetPos, elapsedTime / timeToMove);
             elapsedTime += Time.deltaTime;
             yield return null;

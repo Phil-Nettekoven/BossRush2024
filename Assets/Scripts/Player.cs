@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     public int _playerDmg = 50;
     public const int rollCoolDown = 5;
     private GameManager _gm;
+    private GridManager _gridManager;
     private int rollTimer;
 
     private float playerMoveDistance = 1f;
@@ -28,6 +29,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         _gm = GameManager.Instance;
+        _gridManager = GridManager.Instance;
         setSprite(_petah);
     }
 
@@ -59,8 +61,7 @@ public class Player : MonoBehaviour
 
     public IEnumerator Move(Vector3 direction, float distance)
     {
-        //_gm.createDangerTile(gameObject.transform.position, 2, 2);
-        //print(isRolling);
+        print(_gridManager.GetTileAtPosition(this.transform.position + (direction * distance)) + this.transform.position + (direction * distance));
         isMoving = true;
         if (isRolling && rollTimer <= 0) rollTimer = rollCoolDown;
         float elapsedTime = 0;
