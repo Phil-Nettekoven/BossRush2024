@@ -68,13 +68,13 @@ public class GridManager : MonoBehaviour
             {
                 if (x == 0 || x == _width - 1 || y == 0 || y == _height - 1)
                 {
-                    var spawnedWall = Instantiate(_wallPrefab, new Vector3(x, y), Quaternion.identity);
+                    Wall spawnedWall = Instantiate(_wallPrefab, new Vector3(x, y), Quaternion.identity);
                     spawnedWall.name = $"Wall {x} {y}";
                     _tiles[new Vector2(x, y)] = new TileHolder(spawnedWall);
                 }
                 else
                 {
-                    var spawnedTile = Instantiate(_tilePrefab, new Vector3(x, y), Quaternion.identity);
+                    Tile spawnedTile = Instantiate(_tilePrefab, new Vector3(x, y), Quaternion.identity);
                     spawnedTile.name = $"Tile {x} {y}";
 
                     var isOffset = (x % 2 == 0 && y % 2 != 0) || (x % 2 != 0 && y % 2 == 0);

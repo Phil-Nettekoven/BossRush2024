@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Wall
   - Floor
+  - DmgSource
   layers:
   - Default
   - TransparentFX
@@ -48,6 +49,9 @@ TagManager:
     locked: 0
   - name: Boss
     uniqueID: 1701938633
+    locked: 0
+  - name: Hazards
+    uniqueID: 410024053
     locked: 0
   - name: DangerTiles
     uniqueID: 3355183967

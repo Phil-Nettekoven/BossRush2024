@@ -61,7 +61,6 @@ public class Player : MonoBehaviour
 
     public IEnumerator Move(Vector3 direction, float distance)
     {
-        print(_gridManager.GetTileAtPosition(this.transform.position + (direction * distance)) + this.transform.position + (direction * distance));
         isMoving = true;
         if (isRolling && rollTimer <= 0) rollTimer = rollCoolDown;
         float elapsedTime = 0;

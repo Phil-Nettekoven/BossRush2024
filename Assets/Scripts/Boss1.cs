@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-//using UnityEditor.Search;
 using UnityEngine;
 
 public class Boss1 : MonoBehaviour
@@ -13,7 +12,7 @@ public class Boss1 : MonoBehaviour
     const float timeToWait = 0.05f;
     private GameManager _gm;
     private GridManager _gridManager;
-    private Queue<KeyValuePair<string, int>> queuedMoves;
+    private Queue<KeyValuePair<string, int>> _queuedMoves;
 
     public GameObject Player;
 
@@ -22,6 +21,11 @@ public class Boss1 : MonoBehaviour
     public GameObject self;
 
     private Vector3 stompTarget;
+    private Dictionary<Vector2, bool> _stompableTile = new Dictionary<Vector2, bool>();
+
+    private Queue<KeyValuePair<ShockTile, Vector2>> _shockTileQueue;
+
+    [SerializeField] private ShockTile _shockTile;
 
     private void Start()
     {
@@ -29,16 +33,17 @@ public class Boss1 : MonoBehaviour
         Player = GameObject.Find("Player");
         MainCamera = GameObject.Find("Main Camera");
         _gridManager = GridManager.Instance;
-        queuedMoves = new Queue<KeyValuePair<string, int>>();
+        _queuedMoves = new Queue<KeyValuePair<string, int>>();
+        _shockTileQueue = new Queue<KeyValuePair<ShockTile, Vector2>>();
         for (int i = 0; i < 20; i++)
         { //boss does nothing for i turns
-            queuedMoves.Enqueue(GenerateKeyPair("idle", i));
+            _queuedMoves.Enqueue(GenerateKeyPair("idle", i));
         }
     }
 
     void Update()
     {
-        
+
     }
 
     private void NextMove()
@@ -46,27 +51,30 @@ public class Boss1 : MonoBehaviour
         //print(queuedMoves.Count);
         playerPos = Player.transform.position;
         playerDistance = Vector3.Distance(transform.position, playerPos);
-
-        if (queuedMoves.Count > 0 && queuedMoves.Peek().Key == "idle" && playerDistance < 8)
-        { //Player has entered fight radius
-            queuedMoves.Clear();
-        }
-        else if (queuedMoves.Count > 0) //dequeue current moves
+        if (_shockTileQueue.Count > 0)
         {
-            interpretMove(queuedMoves.Dequeue());
+            shockWaveSearch();
+        }
+        else if (_queuedMoves.Count > 0 && _queuedMoves.Peek().Key == "idle" && playerDistance < 8)
+        { //Player has entered fight radius
+            _queuedMoves.Clear();
+        }
+        else if (_queuedMoves.Count > 0) //dequeue current moves
+        {
+            interpretMove(_queuedMoves.Dequeue());
         }
         else if (postStompDelay <= 0 && playerDistance <= 15) //Add "stomp" attack to queue
         {
             for (int i = 0; i < 15; i++)
             {
-                queuedMoves.Enqueue(GenerateKeyPair("stomp", i));
+                _queuedMoves.Enqueue(GenerateKeyPair("stomp", i));
             }
         }
         else if (postStompDelay <= 0 && playerDistance > 15)
         {
             for (int i = 0; i < 5; i++)
             {
-                queuedMoves.Enqueue(GenerateKeyPair("ranged1", i));
+                _queuedMoves.Enqueue(GenerateKeyPair("ranged1", i));
                 postStompDelay = 0;
             }
         }
@@ -130,6 +138,7 @@ public class Boss1 : MonoBehaviour
             yield return null;
         }
         transform.position = targetPos;
+        createShockWave(stompTarget);
         //yield break;
     }
 
@@ -146,6 +155,53 @@ public class Boss1 : MonoBehaviour
         //transform.position = stompTarget;
         //yield break;
     }
+
+    private void createShockWave(Vector2 origin)
+    {
+        //Dictionary<Vector2, bool> stompableTile = new Dictionary<Vector2, bool>();
+        for (int x = -1; x < 2; x++)
+        {
+            for (int y = -1; y < 2; y++) //find the 3x3 tile grid where the boss crashed down
+            {
+
+                if (y == 1) //get tiles above boss
+                {
+                    ShockTile spawnedTile = Instantiate(_shockTile, origin + new Vector2(x, y + 1), Quaternion.identity, _gm.transform);
+                    spawnedTile.Init(0, 1);
+                    _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, Vector2>(spawnedTile, Vector2.up));
+                }
+                if (y == -1) //get tiles under boss
+                {
+                    ShockTile spawnedTile = Instantiate(_shockTile, origin + new Vector2(x, y - 1), Quaternion.identity, _gm.transform);
+                    spawnedTile.Init(0, 1);
+                    _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, Vector2>(spawnedTile, Vector2.down));
+                }
+                if (x == -1)//get tiles left of boss
+                {
+                    ShockTile spawnedTile = Instantiate(_shockTile, origin + new Vector2(x - 1, y), Quaternion.identity, _gm.transform);
+                    spawnedTile.Init(0, 1);
+                    _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, Vector2>(spawnedTile, Vector2.left));
+                }
+                if (x == 1)//get tiles right of boss
+                {
+                    ShockTile spawnedTile = Instantiate(_shockTile, origin + new Vector2(x + 1, y), Quaternion.identity, _gm.transform);
+                    spawnedTile.Init(0, 1);
+                    _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, Vector2>(spawnedTile, Vector2.right));
+                }
+
+                _stompableTile[origin + new Vector2(x, y)] = false;
+                //print(origin + new Vector2(x,y));
+            }
+        }
+
+    }
+
+    private void shockWaveSearch()
+    {
+        print(_shockTileQueue.Count);
+    }
+
+
 
     public KeyValuePair<string, int> GenerateKeyPair(string str, int integer)
     {
