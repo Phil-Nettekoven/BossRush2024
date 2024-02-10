@@ -23,7 +23,7 @@ public class Boss1 : MonoBehaviour
     private Vector3 stompTarget;
     private Dictionary<Vector2, bool> _stompableTile = new Dictionary<Vector2, bool>();
 
-    private Queue<KeyValuePair<ShockTile, Vector2>> _shockTileQueue;
+    private Queue<KeyValuePair<ShockTile, string>> _shockTileQueue;
 
     [SerializeField] private ShockTile _shockTile;
 
@@ -34,7 +34,7 @@ public class Boss1 : MonoBehaviour
         MainCamera = GameObject.Find("Main Camera");
         _gridManager = GridManager.Instance;
         _queuedMoves = new Queue<KeyValuePair<string, int>>();
-        _shockTileQueue = new Queue<KeyValuePair<ShockTile, Vector2>>();
+        _shockTileQueue = new Queue<KeyValuePair<ShockTile, string>>();
         for (int i = 0; i < 20; i++)
         { //boss does nothing for i turns
             _queuedMoves.Enqueue(GenerateKeyPair("idle", i));
@@ -163,33 +163,42 @@ public class Boss1 : MonoBehaviour
         {
             for (int y = -1; y < 2; y++) //find the 3x3 tile grid where the boss crashed down
             {
-
-                if (y == 1) //get tiles above boss
+                Vector2 shockTileLoc;
+                if (y == 1) //create shock tiles above boss
                 {
-                    ShockTile spawnedTile = Instantiate(_shockTile, origin + new Vector2(x, y + 1), Quaternion.identity, _gm.transform);
+                    shockTileLoc = origin + new Vector2(x, y + 1);
+                    ShockTile spawnedTile = Instantiate(_shockTile, shockTileLoc, Quaternion.identity, _gm.transform);
                     spawnedTile.Init(0, 1);
-                    _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, Vector2>(spawnedTile, Vector2.up));
+                    _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "up"));
+                    _stompableTile[shockTileLoc] = false;
                 }
-                if (y == -1) //get tiles under boss
+                if (y == -1) //create shock tiles under boss
                 {
-                    ShockTile spawnedTile = Instantiate(_shockTile, origin + new Vector2(x, y - 1), Quaternion.identity, _gm.transform);
+                    shockTileLoc = origin + new Vector2(x, y - 1);
+                    ShockTile spawnedTile = Instantiate(_shockTile, shockTileLoc, Quaternion.identity, _gm.transform);
                     spawnedTile.Init(0, 1);
-                    _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, Vector2>(spawnedTile, Vector2.down));
+                    _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "down"));
+                    _stompableTile[shockTileLoc] = false;
                 }
-                if (x == -1)//get tiles left of boss
+                if (x == -1)//create shock tiles left of boss
                 {
-                    ShockTile spawnedTile = Instantiate(_shockTile, origin + new Vector2(x - 1, y), Quaternion.identity, _gm.transform);
+                    shockTileLoc = origin + new Vector2(x - 1, y);
+                    ShockTile spawnedTile = Instantiate(_shockTile, shockTileLoc, Quaternion.identity, _gm.transform);
                     spawnedTile.Init(0, 1);
-                    _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, Vector2>(spawnedTile, Vector2.left));
+                    _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "left"));
+                    _stompableTile[shockTileLoc] = false;
                 }
-                if (x == 1)//get tiles right of boss
+                if (x == 1)//create shock tiles right of boss
                 {
-                    ShockTile spawnedTile = Instantiate(_shockTile, origin + new Vector2(x + 1, y), Quaternion.identity, _gm.transform);
+                    shockTileLoc = origin + new Vector2(x + 1, y);
+                    ShockTile spawnedTile = Instantiate(_shockTile, shockTileLoc, Quaternion.identity, _gm.transform);
                     spawnedTile.Init(0, 1);
-                    _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, Vector2>(spawnedTile, Vector2.right));
+                    _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "right"));
+                    _stompableTile[shockTileLoc] = false;
                 }
 
                 _stompableTile[origin + new Vector2(x, y)] = false;
+
                 //print(origin + new Vector2(x,y));
             }
         }
@@ -198,10 +207,48 @@ public class Boss1 : MonoBehaviour
 
     private void shockWaveSearch()
     {
-        print(_shockTileQueue.Count);
+        Queue<KeyValuePair<ShockTile, string>> newQueue = new Queue<KeyValuePair<ShockTile, string>>();
+        while (_shockTileQueue.Count > 0)
+        {
+            KeyValuePair<ShockTile, string> curTile = _shockTileQueue.Dequeue();
+            Vector2 curTilePos = curTile.Key.transform.position;
+            ShockTile spawnedTile;
+            switch (curTile.Value)
+            {
+                case "up":
+                    spawnedTile = createShockTile(curTilePos + Vector2.up);
+                    if (spawnedTile) { newQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "up")); }
+
+                    break;
+                case "down":
+                    spawnedTile = createShockTile(curTilePos + Vector2.down);
+                    if (spawnedTile) { newQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "down")); }
+                    break;
+                case "left":
+                    spawnedTile = createShockTile(curTilePos + Vector2.left);
+
+                    if (spawnedTile != null) { newQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "left")); }
+                    break;
+                case "right":
+                    spawnedTile = createShockTile(curTilePos + Vector2.right);
+                    if (spawnedTile != null) { newQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "right")); }
+                    break;
+            }
+        }
+        _shockTileQueue = newQueue;
     }
 
-
+    private ShockTile createShockTile(Vector2 targetPos)
+    {
+        if (!_stompableTile.ContainsKey(targetPos))
+        {
+            ShockTile spawnedTile = Instantiate(_shockTile, targetPos, Quaternion.identity, _gm.transform);
+            spawnedTile.Init(0, 1);
+            _stompableTile[targetPos] = false;
+            return spawnedTile;
+        }
+        return null;
+    }
 
     public KeyValuePair<string, int> GenerateKeyPair(string str, int integer)
     {
