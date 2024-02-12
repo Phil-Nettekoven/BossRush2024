@@ -47,7 +47,7 @@ public class ShockTile : MonoBehaviour
 
     private void renderSprite()
     {
-        print("RENDERED");
+        //print("RENDERED");
         this.gameObject.GetComponent<SpriteRenderer>().sprite = _shockTileSprite;
         rendered = true;
     }
