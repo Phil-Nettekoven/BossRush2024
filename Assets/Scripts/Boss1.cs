@@ -11,9 +11,9 @@ public class Boss1 : MonoBehaviour
     const float timeToMove = 0.15f;
     const float timeToWait = 0.05f;
 
-    const int _shockTileDelay = 0;
+    const int _shockTileDelay = 1;
 
-    const int _shockTileDuration = 0;
+    const int _shockTileDuration = 1;
 
     private GameManager _gm;
     private GridManager _gridManager;
@@ -26,7 +26,7 @@ public class Boss1 : MonoBehaviour
     public GameObject self;
 
     private Vector3 stompTarget;
-    private Dictionary<Vector2, bool> _stompableTile = new Dictionary<Vector2, bool>();
+    private List<Vector2> _stompableTile;
 
     private Queue<KeyValuePair<ShockTile, string>> _shockTileQueue;
 
@@ -40,6 +40,7 @@ public class Boss1 : MonoBehaviour
         _gridManager = GridManager.Instance;
         _queuedMoves = new Queue<KeyValuePair<string, int>>();
         _shockTileQueue = new Queue<KeyValuePair<ShockTile, string>>();
+        _stompableTile = new List<Vector2>();
         for (int i = 0; i < 20; i++)
         { //boss does nothing for i turns
             _queuedMoves.Enqueue(GenerateKeyPair("idle", i));
@@ -115,7 +116,7 @@ public class Boss1 : MonoBehaviour
                 break;
             case 3: //Telegraph attack (exclamation marker)
                 stompTarget = playerPos;
-                _gm.createDangerTile(stompTarget, 0, 3, 1); //create large danger tile on player position
+                _gm.createDangerTile(stompTarget, 0, 3, 1); //create large danger tile on target position
                 break;
             case 7: //Crash down (damage on impact zone)
                 StartCoroutine(JumpDown(stompTarget));
@@ -163,47 +164,44 @@ public class Boss1 : MonoBehaviour
 
     private void createShockWave(Vector2 origin)
     {
-        //_stompableTile[origin] = false;
+        _stompableTile.Add(origin);
+        Vector2 shockTileLoc;
         for (int x = -1; x < 2; x++)
         {
             for (int y = -1; y < 2; y++) //find the 3x3 tile grid where the boss crashed down
             {
-                Vector2 shockTileLoc = origin;
-                string shockTileDir = null;
+                _stompableTile.Add(origin + new Vector2(x, y));
+                shockTileLoc = origin;
                 ShockTile spawnedTile = null;
                 if (y == 1) //create shock tiles above boss
                 {
-                    print(origin + new Vector2(x, y + 1));
+                    //print("y == 1");
+                    //print(origin + new Vector2(x, y + 1));
                     shockTileLoc = origin + new Vector2(x, y + 1);
-                    shockTileDir = "up";
+                    spawnedTile = createShockTile(shockTileLoc);
+                    if (spawnedTile) { _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "up")); }
                 }
-                if (y == -1) //create shock tiles under boss
+                else if (y == -1) //create shock tiles under boss
                 {
+                    //print("y == -1");
                     shockTileLoc = origin + new Vector2(x, y - 1);
-                    shockTileDir = "down";
+                    spawnedTile = createShockTile(shockTileLoc);
+                    if (spawnedTile) { _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "down")); }
                 }
                 if (x == -1)//create shock tiles left of boss
                 {
+                    //print("x == -1");
                     shockTileLoc = origin + new Vector2(x - 1, y);
-                    shockTileDir = "left";
+                    spawnedTile = createShockTile(shockTileLoc);
+                    if (spawnedTile) { _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "left")); }
                 }
-                if (x == 1)//create shock tiles right of boss
+                else if (x == 1)//create shock tiles right of boss
                 {
+                    //print("x == 1");
                     shockTileLoc = origin + new Vector2(x + 1, y);
-                    shockTileDir = "right";
+                    spawnedTile = createShockTile(shockTileLoc);
+                    if (spawnedTile) { _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "right")); }
                 }
-                
-                spawnedTile = createShockTile(shockTileLoc);
-
-                if (spawnedTile != null)
-                {
-                    _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, shockTileDir));
-                    //_stompableTile[shockTileLoc] = false;
-                }
-
-                _stompableTile[origin + new Vector2(x, y)] = false;
-
-                //print(origin + new Vector2(x,y));
             }
         }
 
@@ -212,11 +210,15 @@ public class Boss1 : MonoBehaviour
     private void shockWaveSearch()
     {
         Queue<KeyValuePair<ShockTile, string>> newQueue = new Queue<KeyValuePair<ShockTile, string>>();
+        KeyValuePair<ShockTile, string> curTile;
+        Vector2 curTilePos;
+        print(_shockTileQueue.Count);
         while (_shockTileQueue.Count > 0)
         {
-            KeyValuePair<ShockTile, string> curTile = _shockTileQueue.Dequeue();
-            Vector2 curTilePos = curTile.Key.transform.position;
-            ShockTile spawnedTile;
+            print("queue");
+            curTile = _shockTileQueue.Dequeue();
+            curTilePos = curTile.Key.transform.position;
+            ShockTile spawnedTile = null;
             switch (curTile.Value)
             {
                 case "up":
@@ -238,17 +240,21 @@ public class Boss1 : MonoBehaviour
                     if (spawnedTile != null) { newQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "right")); }
                     break;
             }
+
+            //print(spawnedTile == null);
         }
         _shockTileQueue = newQueue;
     }
 
     private ShockTile createShockTile(Vector2 targetPos)
     {
-        if (!_stompableTile.ContainsKey(targetPos))
+        print(_stompableTile.Count);
+        if (!_stompableTile.Contains(targetPos))
         {
+            _stompableTile.Add(targetPos);
             ShockTile spawnedTile = Instantiate(_shockTile, targetPos, Quaternion.identity, _gm.transform);
             spawnedTile.Init(_shockTileDelay, _shockTileDuration);
-            _stompableTile[targetPos] = false;
+            
             return spawnedTile;
         }
         return null;
