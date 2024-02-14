@@ -31,8 +31,6 @@ public class ShockTile : MonoBehaviour
 
     void NextMove()
     {
-        print(_delay);
-
         if (!_rendered) //Tile isn't rendered: check _delay, decrement if necessary, render sprite if delay <= 0
         {
             if (_delay > 1) { _delay -= 1; }

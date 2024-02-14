@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,11 +27,12 @@ public class Boss1 : MonoBehaviour
     public GameObject self;
 
     private Vector3 stompTarget;
-    private List<Vector2> _stompableTile;
+    private List<Vector2> _unstompableTiles;
 
     private Queue<ShockTile> _shockTileQueue;
+    private List<Vector2> _shockTileLocations;
 
-    [SerializeField] private ShockTile _shockTile;
+    [SerializeField] private ShockTile _shockTilePrefab;
 
     private void Start()
     {
@@ -40,7 +42,8 @@ public class Boss1 : MonoBehaviour
         _gridManager = GridManager.Instance;
         _queuedMoves = new Queue<KeyValuePair<string, int>>();
         _shockTileQueue = new Queue<ShockTile>();
-        _stompableTile = new List<Vector2>();
+        _unstompableTiles = new List<Vector2>();
+        _shockTileLocations = new List<Vector2>();
         for (int i = 0; i < 20; i++)
         { //boss does nothing for i turns
             _queuedMoves.Enqueue(GenerateKeyPair("idle", i));
@@ -166,49 +169,77 @@ public class Boss1 : MonoBehaviour
     private void createShockWave(Vector2 origin)
     {
         //_stompableTile.Add(origin);
-        Vector2 shockTileLoc;
+        Vector2 targetPos;
+        ShockTile spawnedTile;
         for (int x = -1; x < 2; x++)
         {
             for (int y = -1; y < 2; y++) //find the 3x3 tile grid where the boss crashed down
             {
-                _stompableTile.Add(origin + new Vector2(x, y));
-                shockTileLoc = origin;
-                ShockTile spawnedTile = null;
+                _unstompableTiles.Add(origin + new Vector2(x, y));
+
                 if (y == 1) //create shock tiles above boss
                 {
                     //print("y == 1");
                     //print(origin + new Vector2(x, y + 1));
-                    shockTileLoc = origin + new Vector2(x, y + 1);
-                    spawnedTile = createShockTile(shockTileLoc, "up");
-                    if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); }
+                    targetPos = origin + new Vector2(x, y + 1);
+                    spawnedTile = createShockTile(targetPos, "up");
+                    if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
+
+                    if (x == 1) //create top right corner tile
+                    {
+                        targetPos = origin + new Vector2(x + 1, y + 1);
+                        spawnedTile = createShockTile(targetPos, randomDirection(0));
+                        if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
+                    }
+                    else if (x == -1)
+                    {
+                        targetPos = origin + new Vector2(x - 1, y + 1);
+                        spawnedTile = createShockTile(targetPos, randomDirection(1));
+                        if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
+                    }
                 }
                 else if (y == -1) //create shock tiles under boss
                 {
                     //print("y == -1");
-                    shockTileLoc = origin + new Vector2(x, y - 1);
-                    spawnedTile = createShockTile(shockTileLoc, "down");
-                    if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); }
+                    targetPos = origin + new Vector2(x, y - 1);
+                    spawnedTile = createShockTile(targetPos, "down");
+                    if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
+
+                    if (x == 1) //create bottom right corner tile
+                    {
+                        targetPos = origin + new Vector2(x + 1, y - 1);
+                        spawnedTile = createShockTile(targetPos, randomDirection(2));
+                        if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
+                    }
+                    else if (x == -1) //create bottom left corner tile
+                    {
+                        targetPos = origin + new Vector2(x - 1, y - 1);
+                        spawnedTile = createShockTile(targetPos, randomDirection(3));
+                        if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
+                    }
                 }
+
+
                 if (x == -1)//create shock tiles left of boss
                 {
                     //print("x == -1");
-                    shockTileLoc = origin + new Vector2(x - 1, y);
-                    spawnedTile = createShockTile(shockTileLoc, "left");
-                    if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); }
+                    targetPos = origin + new Vector2(x - 1, y);
+                    spawnedTile = createShockTile(targetPos, "left");
+                    if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
                 }
                 else if (x == 1)//create shock tiles right of boss
                 {
                     //print("x == 1");
-                    shockTileLoc = origin + new Vector2(x + 1, y);
-                    spawnedTile = createShockTile(shockTileLoc, "right");
-                    if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); }
+                    targetPos = origin + new Vector2(x + 1, y);
+                    spawnedTile = createShockTile(targetPos, "right");
+                    if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
                 }
             }
         }
 
     }
 
-    private void shockWaveSearch(bool random = true, int maxBranches = 3)
+    private void shockWaveSearch(bool random = true, int maxBranches = 10)
     {
         Queue<ShockTile> newQueue = new Queue<ShockTile>();
         ShockTile curTile;
@@ -247,6 +278,7 @@ public class Boss1 : MonoBehaviour
                         break;
                 }
             }
+            _shockTileLocations.Remove(curTilePos);
 
 
 
@@ -254,15 +286,18 @@ public class Boss1 : MonoBehaviour
             //print(spawnedTile == null);
         }
         _shockTileQueue = newQueue;
-        _stompableTile.Clear();
+
+        _shockTileLocations.Clear();
     }
 
     private ShockTile createShockTile(Vector2 targetPos, string direction)
     {
-        if (!_stompableTile.Contains(targetPos) && _gridManager.GetTileAtPosition(targetPos) != "Wall")
+        print(!_unstompableTiles.Contains(targetPos));
+        if (!_unstompableTiles.Contains(targetPos) && !_shockTileLocations.Contains(targetPos) && _gridManager.GetTileAtPosition(targetPos) != "Wall")
         {
-            _stompableTile.Add(targetPos);
-            ShockTile spawnedTile = Instantiate(_shockTile, targetPos, Quaternion.identity, _gm.transform);
+            _shockTileLocations.Add(targetPos);
+            _unstompableTiles.Add(targetPos);
+            ShockTile spawnedTile = Instantiate(_shockTilePrefab, targetPos, Quaternion.identity, _gm.transform);
             spawnedTile.Init(_shockTileDelay, _shockTileDuration, direction);
 
             return spawnedTile;
@@ -275,16 +310,33 @@ public class Boss1 : MonoBehaviour
         Vector2 randomModifier = Vector2.zero;
         if (direction == "up" || direction == "down")
         {
-            randomModifier.x = Random.Range(-1, 1);
+            randomModifier.x = UnityEngine.Random.Range(-1, 1);
+            randomModifier.y = UnityEngine.Random.Range(-3, 3);
         }
         else
         {
-            randomModifier.y = Random.Range(-1, 1);
+            randomModifier.y = UnityEngine.Random.Range(-1, 1);
+            randomModifier.x = UnityEngine.Random.Range(-3, 3);
         }
 
         return randomModifier;
 
 
+    }
+
+    private string randomDirection(int location = -1) //return a random direction for corner tiles to travel
+    {
+
+        //directions[0] = top left corner
+        //directions[1] = top right corner
+        //directions[2] = bottom left corner
+        //directions[3] = bottom right corner
+        string[,] directions = { { "up", "left" }, { "up", "right" }, { "down", "left" }, { "down", "right" } };
+        if (location == -1)
+        {
+            return directions[UnityEngine.Random.Range(0, 3), UnityEngine.Random.Range(0, 1)];
+        }
+        return directions[location, UnityEngine.Random.Range(0, 1)];
     }
 
     public KeyValuePair<string, int> GenerateKeyPair(string str, int integer)

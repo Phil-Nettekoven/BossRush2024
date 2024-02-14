@@ -1026,7 +1026,7 @@ MonoBehaviour:
   Player: {fileID: 574614413}
   MainCamera: {fileID: 1670562904}
   self: {fileID: 388678659}
-  _shockTile: {fileID: -3065265309779973697, guid: ae5fe4632e67be44ab34c9e06028f07c, type: 3}
+  _shockTilePrefab: {fileID: -3065265309779973697, guid: ae5fe4632e67be44ab34c9e06028f07c, type: 3}
 --- !u!1 &416086419 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5682021156432365170, guid: 06f5e2c2be1f3d946b22e252e7a5dc96, type: 3}
