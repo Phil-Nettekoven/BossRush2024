@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class ShockTile : MonoBehaviour
@@ -7,18 +8,20 @@ public class ShockTile : MonoBehaviour
 
 
     private int _duration, _delay;
-    private bool rendered = false;
+    private bool _rendered = false;
+    private string _direction;
     [SerializeField] private Sprite _shockTileSprite;
     // Start is called before the first frame update
     void Start()
     {
 
     }
-    public void Init(int delay, int duration)
+    public void Init(int delay, int duration, string direction)
     {
-        _delay = delay;
-        _duration = duration;
-        if (_delay <= 0 && _duration > 0) { renderSprite(); }
+        _delay = delay; //delay of 0 will render on turn it is created
+        _duration = duration; //duration of 0 will destroy on the same turn
+        _direction = direction;
+        if (_delay <= 0) { renderSprite(); } //set delay = 0 to render immediately
     }
     // Update is called once per frame
     void Update()
@@ -28,16 +31,17 @@ public class ShockTile : MonoBehaviour
 
     void NextMove()
     {
+        print(_delay);
 
-        if (!rendered) //Warning isn't rendered: check _delay, decrement if necessary, render sprite if delay <= 0
+        if (!_rendered) //Tile isn't rendered: check _delay, decrement if necessary, render sprite if delay <= 0
         {
-            if (_delay > 0) { _delay -= 1; }
+            if (_delay > 1) { _delay -= 1; }
             else { renderSprite(); }
         }
-        else //Warning is rendered: check _duration, decrement if necessary, destroy object if _duration <= 0
+        else //Tile is rendered: check _duration, decrement if necessary, destroy object if _duration <= 0
         {
             
-            if (_duration > 0) { _duration -= 1; }
+            if (_duration > 1) { _duration -= 1; }
             else { 
                 //print("Destroyed at " + DateTime.Now);
                 Destroy(this.gameObject); }
@@ -49,6 +53,14 @@ public class ShockTile : MonoBehaviour
     {
         //print("RENDERED");
         this.gameObject.GetComponent<SpriteRenderer>().sprite = _shockTileSprite;
-        rendered = true;
+        _rendered = true;
+    }
+
+    public bool getRendered(){
+        return _rendered;
+    }
+
+    public string getDirection(){
+        return _direction;
     }
 }

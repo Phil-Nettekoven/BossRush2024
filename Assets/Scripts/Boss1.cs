@@ -11,7 +11,7 @@ public class Boss1 : MonoBehaviour
     const float timeToMove = 0.15f;
     const float timeToWait = 0.05f;
 
-    const int _shockTileDelay = 1;
+    const int _shockTileDelay = 0;
 
     const int _shockTileDuration = 1;
 
@@ -28,7 +28,7 @@ public class Boss1 : MonoBehaviour
     private Vector3 stompTarget;
     private List<Vector2> _stompableTile;
 
-    private Queue<KeyValuePair<ShockTile, string>> _shockTileQueue;
+    private Queue<ShockTile> _shockTileQueue;
 
     [SerializeField] private ShockTile _shockTile;
 
@@ -39,7 +39,7 @@ public class Boss1 : MonoBehaviour
         MainCamera = GameObject.Find("Main Camera");
         _gridManager = GridManager.Instance;
         _queuedMoves = new Queue<KeyValuePair<string, int>>();
-        _shockTileQueue = new Queue<KeyValuePair<ShockTile, string>>();
+        _shockTileQueue = new Queue<ShockTile>();
         _stompableTile = new List<Vector2>();
         for (int i = 0; i < 20; i++)
         { //boss does nothing for i turns
@@ -61,6 +61,7 @@ public class Boss1 : MonoBehaviour
         {
             shockWaveSearch();
         }
+
         else if (_queuedMoves.Count > 0 && _queuedMoves.Peek().Key == "idle" && playerDistance < 8)
         { //Player has entered fight radius
             _queuedMoves.Clear();
@@ -164,7 +165,7 @@ public class Boss1 : MonoBehaviour
 
     private void createShockWave(Vector2 origin)
     {
-        _stompableTile.Add(origin);
+        //_stompableTile.Add(origin);
         Vector2 shockTileLoc;
         for (int x = -1; x < 2; x++)
         {
@@ -178,86 +179,112 @@ public class Boss1 : MonoBehaviour
                     //print("y == 1");
                     //print(origin + new Vector2(x, y + 1));
                     shockTileLoc = origin + new Vector2(x, y + 1);
-                    spawnedTile = createShockTile(shockTileLoc);
-                    if (spawnedTile) { _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "up")); }
+                    spawnedTile = createShockTile(shockTileLoc, "up");
+                    if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); }
                 }
                 else if (y == -1) //create shock tiles under boss
                 {
                     //print("y == -1");
                     shockTileLoc = origin + new Vector2(x, y - 1);
-                    spawnedTile = createShockTile(shockTileLoc);
-                    if (spawnedTile) { _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "down")); }
+                    spawnedTile = createShockTile(shockTileLoc, "down");
+                    if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); }
                 }
                 if (x == -1)//create shock tiles left of boss
                 {
                     //print("x == -1");
                     shockTileLoc = origin + new Vector2(x - 1, y);
-                    spawnedTile = createShockTile(shockTileLoc);
-                    if (spawnedTile) { _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "left")); }
+                    spawnedTile = createShockTile(shockTileLoc, "left");
+                    if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); }
                 }
                 else if (x == 1)//create shock tiles right of boss
                 {
                     //print("x == 1");
                     shockTileLoc = origin + new Vector2(x + 1, y);
-                    spawnedTile = createShockTile(shockTileLoc);
-                    if (spawnedTile) { _shockTileQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "right")); }
+                    spawnedTile = createShockTile(shockTileLoc, "right");
+                    if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); }
                 }
             }
         }
 
     }
 
-    private void shockWaveSearch()
+    private void shockWaveSearch(bool random = true, int maxBranches = 3)
     {
-        Queue<KeyValuePair<ShockTile, string>> newQueue = new Queue<KeyValuePair<ShockTile, string>>();
-        KeyValuePair<ShockTile, string> curTile;
+        Queue<ShockTile> newQueue = new Queue<ShockTile>();
+        ShockTile curTile;
         Vector2 curTilePos;
-        print(_shockTileQueue.Count);
+        Vector2 randomModifier = Vector2.zero;
+        //print(_shockTileQueue.Count);
         while (_shockTileQueue.Count > 0)
         {
-            print("queue");
             curTile = _shockTileQueue.Dequeue();
-            curTilePos = curTile.Key.transform.position;
-            ShockTile spawnedTile = null;
-            switch (curTile.Value)
+            curTilePos = curTile.transform.position;
+
+            for (int i = 0; i < maxBranches; i++)
             {
-                case "up":
-                    spawnedTile = createShockTile(curTilePos + Vector2.up);
-                    if (spawnedTile) { newQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "up")); }
+                ShockTile spawnedTile = null;
+                if (random) { randomModifier = generateRandomModifier(curTile.getDirection()); }
 
-                    break;
-                case "down":
-                    spawnedTile = createShockTile(curTilePos + Vector2.down);
-                    if (spawnedTile) { newQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "down")); }
-                    break;
-                case "left":
-                    spawnedTile = createShockTile(curTilePos + Vector2.left);
-
-                    if (spawnedTile != null) { newQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "left")); }
-                    break;
-                case "right":
-                    spawnedTile = createShockTile(curTilePos + Vector2.right);
-                    if (spawnedTile != null) { newQueue.Enqueue(new KeyValuePair<ShockTile, string>(spawnedTile, "right")); }
-                    break;
+                switch (curTile.getDirection())
+                {
+                    case "up":
+                        spawnedTile = createShockTile(curTilePos + Vector2.up + randomModifier, "up");
+                        if (spawnedTile) { newQueue.Enqueue(spawnedTile); }
+                        break;
+                    case "down":
+                        spawnedTile = createShockTile(curTilePos + Vector2.down + randomModifier, "down");
+                        if (spawnedTile) { newQueue.Enqueue(spawnedTile); }
+                        break;
+                    case "left":
+                        spawnedTile = createShockTile(curTilePos + Vector2.left + randomModifier, "left");
+                        if (spawnedTile) { newQueue.Enqueue(spawnedTile); }
+                        break;
+                    case "right":
+                        spawnedTile = createShockTile(curTilePos + Vector2.right + randomModifier, "right");
+                        if (spawnedTile) { newQueue.Enqueue(spawnedTile); }
+                        break;
+                    default:
+                        break;
+                }
             }
+
+
+
 
             //print(spawnedTile == null);
         }
         _shockTileQueue = newQueue;
+        _stompableTile.Clear();
     }
 
-    private ShockTile createShockTile(Vector2 targetPos)
+    private ShockTile createShockTile(Vector2 targetPos, string direction)
     {
-        print(_stompableTile.Count);
-        if (!_stompableTile.Contains(targetPos))
+        if (!_stompableTile.Contains(targetPos) && _gridManager.GetTileAtPosition(targetPos) != "Wall")
         {
             _stompableTile.Add(targetPos);
             ShockTile spawnedTile = Instantiate(_shockTile, targetPos, Quaternion.identity, _gm.transform);
-            spawnedTile.Init(_shockTileDelay, _shockTileDuration);
-            
+            spawnedTile.Init(_shockTileDelay, _shockTileDuration, direction);
+
             return spawnedTile;
         }
         return null;
+    }
+
+    private Vector2 generateRandomModifier(string direction)
+    {
+        Vector2 randomModifier = Vector2.zero;
+        if (direction == "up" || direction == "down")
+        {
+            randomModifier.x = Random.Range(-1, 1);
+        }
+        else
+        {
+            randomModifier.y = Random.Range(-1, 1);
+        }
+
+        return randomModifier;
+
+
     }
 
     public KeyValuePair<string, int> GenerateKeyPair(string str, int integer)
