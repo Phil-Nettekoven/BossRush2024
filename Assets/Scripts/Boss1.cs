@@ -185,16 +185,20 @@ public class Boss1 : MonoBehaviour
                     spawnedTile = createShockTile(targetPos, "up");
                     if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
 
-                    if (x == 1) //create top right corner tile
+                    if (x == 1) //create top right corner tiles
                     {
                         targetPos = origin + new Vector2(x + 1, y + 1);
-                        spawnedTile = createShockTile(targetPos, randomDirection(0));
+                        spawnedTile = createShockTile(targetPos, "up");
+                        if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
+                        spawnedTile = createShockTile(targetPos, "right", true);//force instantiate second corner tile
                         if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
                     }
-                    else if (x == -1)
+                    else if (x == -1) //top left corner tiles
                     {
                         targetPos = origin + new Vector2(x - 1, y + 1);
-                        spawnedTile = createShockTile(targetPos, randomDirection(1));
+                        spawnedTile = createShockTile(targetPos, "up");
+                        if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
+                        spawnedTile = createShockTile(targetPos, "left", true); //force instantiate second corner tile
                         if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
                     }
                 }
@@ -205,16 +209,21 @@ public class Boss1 : MonoBehaviour
                     spawnedTile = createShockTile(targetPos, "down");
                     if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
 
-                    if (x == 1) //create bottom right corner tile
+                    if (x == 1) //create bottom right corner tiles
                     {
                         targetPos = origin + new Vector2(x + 1, y - 1);
-                        spawnedTile = createShockTile(targetPos, randomDirection(2));
+                        spawnedTile = createShockTile(targetPos, "down");
                         if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
+                        spawnedTile = createShockTile(targetPos, "right", true); //force instantiate second corner tile
+                        if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
+
                     }
-                    else if (x == -1) //create bottom left corner tile
+                    else if (x == -1) //create bottom left corner tiles
                     {
                         targetPos = origin + new Vector2(x - 1, y - 1);
-                        spawnedTile = createShockTile(targetPos, randomDirection(3));
+                        spawnedTile = createShockTile(targetPos, "down");
+                        if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
+                        spawnedTile = createShockTile(targetPos, "left", true); //force instantiate second corner tile
                         if (spawnedTile) { _shockTileQueue.Enqueue(spawnedTile); spawnedTile = null; }
                     }
                 }
@@ -239,84 +248,103 @@ public class Boss1 : MonoBehaviour
 
     }
 
-    private void shockWaveSearch(bool random = true, int maxBranches = 10)
+    private void shockWaveSearch(bool random = false, int maxBranches = 1)
     {
         Queue<ShockTile> newQueue = new Queue<ShockTile>();
         ShockTile curTile;
         Vector2 curTilePos;
         Vector2 randomModifier = Vector2.zero;
+        Vector2 scatter = Vector2.zero;
         //print(_shockTileQueue.Count);
         while (_shockTileQueue.Count > 0)
         {
             curTile = _shockTileQueue.Dequeue();
             curTilePos = curTile.transform.position;
 
-            for (int i = 0; i < maxBranches; i++)
+            for (int i = -1; i < 2; i++)
             {
+                scatter = Vector2.zero;
                 ShockTile spawnedTile = null;
                 if (random) { randomModifier = generateRandomModifier(curTile.getDirection()); }
 
                 switch (curTile.getDirection())
                 {
                     case "up":
-                        spawnedTile = createShockTile(curTilePos + Vector2.up + randomModifier, "up");
-                        if (spawnedTile) { newQueue.Enqueue(spawnedTile); }
+                        scatter.x += i;
+                        spawnedTile = createShockTile(curTilePos + Vector2.up + randomModifier + scatter, "up");
                         break;
                     case "down":
-                        spawnedTile = createShockTile(curTilePos + Vector2.down + randomModifier, "down");
-                        if (spawnedTile) { newQueue.Enqueue(spawnedTile); }
+                        scatter.x += i;
+                        spawnedTile = createShockTile(curTilePos + Vector2.down + randomModifier + scatter, "down");
                         break;
                     case "left":
-                        spawnedTile = createShockTile(curTilePos + Vector2.left + randomModifier, "left");
-                        if (spawnedTile) { newQueue.Enqueue(spawnedTile); }
+                        scatter.y += i;
+                        spawnedTile = createShockTile(curTilePos + Vector2.left + randomModifier + scatter, "left");
                         break;
                     case "right":
-                        spawnedTile = createShockTile(curTilePos + Vector2.right + randomModifier, "right");
-                        if (spawnedTile) { newQueue.Enqueue(spawnedTile); }
+                        scatter.y += i;
+                        spawnedTile = createShockTile(curTilePos + Vector2.right + randomModifier + scatter, "right");
                         break;
                     default:
                         break;
                 }
+                if (spawnedTile) { newQueue.Enqueue(spawnedTile); }
             }
             _shockTileLocations.Remove(curTilePos);
-
-
-
-
-            //print(spawnedTile == null);
         }
-        _shockTileQueue = newQueue;
-
-        _shockTileLocations.Clear();
-    }
-
-    private ShockTile createShockTile(Vector2 targetPos, string direction)
-    {
-        print(!_unstompableTiles.Contains(targetPos));
-        if (!_unstompableTiles.Contains(targetPos) && !_shockTileLocations.Contains(targetPos) && _gridManager.GetTileAtPosition(targetPos) != "Wall")
+        if (newQueue.Count == 0)
         {
-            _shockTileLocations.Add(targetPos);
-            _unstompableTiles.Add(targetPos);
-            ShockTile spawnedTile = Instantiate(_shockTilePrefab, targetPos, Quaternion.identity, _gm.transform);
-            spawnedTile.Init(_shockTileDelay, _shockTileDuration, direction);
-
-            return spawnedTile;
+            _unstompableTiles.Clear();
         }
-        return null;
+        else
+        {
+            _shockTileQueue = newQueue;
+        }
+        _shockTileLocations.Clear();
+
     }
 
+    private ShockTile createShockTile(Vector2 targetPos, string direction, bool forceInstantiate = false)
+    {
+        ShockTile spawnedTile = null;
+
+        if (!forceInstantiate)
+        {
+            if (_gridManager.isInsideGrid(targetPos) && !_unstompableTiles.Contains(targetPos) && !_shockTileLocations.Contains(targetPos) && _gridManager.GetTileAtPosition(targetPos) != "Wall")
+            {
+                _shockTileLocations.Add(targetPos);
+                _unstompableTiles.Add(targetPos);
+                spawnedTile = Instantiate(_shockTilePrefab, targetPos, Quaternion.identity, _gm.transform);
+                spawnedTile.Init(_shockTileDelay, _shockTileDuration, direction);
+
+                return spawnedTile;
+            }
+        }
+        else
+        { //Force instantiate ignores some instantiation requirements (mostly for corner pieces)
+            if (_gridManager.isInsideGrid(targetPos) && _gridManager.GetTileAtPosition(targetPos) != "Wall")
+            {
+                spawnedTile = Instantiate(_shockTilePrefab, targetPos, Quaternion.identity, _gm.transform);
+                spawnedTile.Init(_shockTileDelay, _shockTileDuration, direction);
+            }
+
+        }
+
+        return spawnedTile;
+    }
     private Vector2 generateRandomModifier(string direction)
     {
         Vector2 randomModifier = Vector2.zero;
         if (direction == "up" || direction == "down")
         {
             randomModifier.x = UnityEngine.Random.Range(-1, 1);
-            randomModifier.y = UnityEngine.Random.Range(-3, 3);
+            randomModifier.y = UnityEngine.Random.Range(-2, 2);
         }
         else
         {
+            randomModifier.x = UnityEngine.Random.Range(-2, 2);
             randomModifier.y = UnityEngine.Random.Range(-1, 1);
-            randomModifier.x = UnityEngine.Random.Range(-3, 3);
+
         }
 
         return randomModifier;

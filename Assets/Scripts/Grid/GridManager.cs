@@ -93,4 +93,8 @@ public class GridManager : MonoBehaviour
         if (_tiles.TryGetValue(pos, out TileHolder tile)) return tile.getContents();
         return null;
     }
+
+    public bool isInsideGrid(Vector2 pos){
+        return pos.x >= 0 && pos.x < _width && pos.y >= 0 && pos.y < _height;
+    }
 }
