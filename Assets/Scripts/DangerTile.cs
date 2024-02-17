@@ -72,7 +72,7 @@ public class DangerSmall : MonoBehaviour
 
     private void renderSprite()
     {
-        gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
+        gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.25f);
         gameObject.GetComponent<SpriteRenderer>().sprite = _sprite;
 
         rendered = true;
