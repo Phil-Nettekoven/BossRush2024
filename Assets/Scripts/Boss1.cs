@@ -248,14 +248,14 @@ public class Boss1 : MonoBehaviour
 
     }
 
-    private void shockWaveSearch(bool random = false, int maxBranches = 1)
+    private void shockWaveSearch(bool random = true, int maxDistance = 1)
     {
         Queue<ShockTile> newQueue = new Queue<ShockTile>();
         ShockTile curTile;
         Vector2 curTilePos;
         Vector2 randomModifier = Vector2.zero;
         Vector2 scatter = Vector2.zero;
-        //print(_shockTileQueue.Count);
+        
         while (_shockTileQueue.Count > 0)
         {
             curTile = _shockTileQueue.Dequeue();
@@ -265,25 +265,25 @@ public class Boss1 : MonoBehaviour
             {
                 scatter = Vector2.zero;
                 ShockTile spawnedTile = null;
-                if (random) { randomModifier = generateRandomModifier(curTile.getDirection()); }
+                if (random) { randomModifier = generateRandomModifier(maxDistance, curTile.getDirection()); }
 
                 switch (curTile.getDirection())
                 {
                     case "up":
                         scatter.x += i;
-                        spawnedTile = createShockTile(curTilePos + Vector2.up + randomModifier + scatter, "up");
+                        spawnedTile = createShockTile(curTilePos + Vector2.up + randomModifier, "up");
                         break;
                     case "down":
                         scatter.x += i;
-                        spawnedTile = createShockTile(curTilePos + Vector2.down + randomModifier + scatter, "down");
+                        spawnedTile = createShockTile(curTilePos + Vector2.down + randomModifier, "down");
                         break;
                     case "left":
                         scatter.y += i;
-                        spawnedTile = createShockTile(curTilePos + Vector2.left + randomModifier + scatter, "left");
+                        spawnedTile = createShockTile(curTilePos + Vector2.left + randomModifier, "left");
                         break;
                     case "right":
                         scatter.y += i;
-                        spawnedTile = createShockTile(curTilePos + Vector2.right + randomModifier + scatter, "right");
+                        spawnedTile = createShockTile(curTilePos + Vector2.right + randomModifier, "right");
                         break;
                     default:
                         break;
@@ -332,17 +332,17 @@ public class Boss1 : MonoBehaviour
 
         return spawnedTile;
     }
-    private Vector2 generateRandomModifier(string direction)
+    private Vector2 generateRandomModifier(int maxDistance, string direction)
     {
         Vector2 randomModifier = Vector2.zero;
         if (direction == "up" || direction == "down")
         {
             randomModifier.x = UnityEngine.Random.Range(-1, 1);
-            randomModifier.y = UnityEngine.Random.Range(-2, 2);
+            randomModifier.y = UnityEngine.Random.Range(maxDistance * -1,  maxDistance);
         }
         else
         {
-            randomModifier.x = UnityEngine.Random.Range(-2, 2);
+            randomModifier.x = UnityEngine.Random.Range(maxDistance * -1, maxDistance);
             randomModifier.y = UnityEngine.Random.Range(-1, 1);
 
         }
