@@ -8,15 +8,16 @@ public class ShockTile : MonoBehaviour
     private bool _rendered = false;
     private string _direction;
     [SerializeField] private Sprite _shockTileSprite;
+
     // Start is called before the first frame update
     void Start()
     {
-
+        
     }
     public void Init(int delay, int duration, string direction)
     {
-        _delay = delay; //delay of 0 will render on turn it is created
-        _duration = duration; //duration of 0 will destroy on the same turn
+        _delay = delay; //delay of 0 will render on the turn it is created
+        _duration = duration; //duration <= 1 will destroy on the beginning of the next turn
         _direction = direction;
         if (_delay <= 0) { renderSprite(); } //set delay = 0 to render immediately
     }

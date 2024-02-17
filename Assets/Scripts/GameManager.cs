@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
     }
 
     public DangerSmall createDangerTile(Vector2 pos, int delay, int duration, int spriteChoice){
-        print("Created new tile at "+ DateTime.Now);
+        //print("Created new tile at "+ DateTime.Now);
         DangerSmall dangerTile = Instantiate(_dangerSmall, pos, Quaternion.identity, this.transform);
         dangerTile.Init(delay, duration, spriteChoice);
         return dangerTile;

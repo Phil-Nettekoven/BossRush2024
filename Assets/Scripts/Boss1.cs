@@ -12,7 +12,7 @@ public class Boss1 : MonoBehaviour
     const float timeToMove = 0.15f;
     const float timeToWait = 0.05f;
 
-    const int _shockTileDelay = 0;
+    const int _shockTileDelay = 1;
 
     const int _shockTileDuration = 1;
 
@@ -316,8 +316,6 @@ public class Boss1 : MonoBehaviour
                 _unstompableTiles.Add(targetPos);
                 spawnedTile = Instantiate(_shockTilePrefab, targetPos, Quaternion.identity, _gm.transform);
                 spawnedTile.Init(_shockTileDelay, _shockTileDuration, direction);
-
-                return spawnedTile;
             }
         }
         else
@@ -329,6 +327,8 @@ public class Boss1 : MonoBehaviour
             }
 
         }
+
+        if (spawnedTile) { _gm.createDangerTile(targetPos, 0, 0, 0); }
 
         return spawnedTile;
     }
