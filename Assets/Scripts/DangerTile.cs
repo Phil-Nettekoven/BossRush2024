@@ -72,8 +72,8 @@ public class DangerSmall : MonoBehaviour
 
     private void renderSprite()
     {
-        gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.25f);
-        gameObject.GetComponent<SpriteRenderer>().sprite = _sprite;
+        gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.25f); //set transparency
+        gameObject.GetComponent<SpriteRenderer>().sprite = _sprite; //render sprite
 
         rendered = true;
     }

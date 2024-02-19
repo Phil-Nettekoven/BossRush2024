@@ -4,7 +4,9 @@ public class ShockTile : MonoBehaviour
 {
 
 
-    private int _duration, _delay;
+    private int _duration, _delay, _damage;
+
+    private float _transparency;
     private bool _rendered = false;
     private string _direction;
     [SerializeField] private Sprite _shockTileSprite;
@@ -14,11 +16,14 @@ public class ShockTile : MonoBehaviour
     {
         
     }
-    public void Init(int delay, int duration, string direction)
+    public void Init(int delay, int duration, string direction, int damage, float transparency)
     {
         _delay = delay; //delay of 0 will render on the turn it is created
         _duration = duration; //duration <= 1 will destroy on the beginning of the next turn
         _direction = direction;
+        _damage = damage;
+        _transparency = transparency;
+        
         if (_delay <= 0) { renderSprite(); } //set delay = 0 to render immediately
     }
     // Update is called once per frame
@@ -47,8 +52,8 @@ public class ShockTile : MonoBehaviour
 
     private void renderSprite()
     {
-        //print("RENDERED");
-        this.gameObject.GetComponent<SpriteRenderer>().sprite = _shockTileSprite;
+        gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, _transparency); //set transparency
+        gameObject.GetComponent<SpriteRenderer>().sprite = _shockTileSprite;
         _rendered = true;
     }
 

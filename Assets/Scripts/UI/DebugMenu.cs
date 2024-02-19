@@ -32,6 +32,6 @@ public class DebugMenu : MonoBehaviour
         _HP.text = "Player HP: " + _playerObject._playerHP;
         _MP.text = "Player MP: " + _playerObject._playerMP; 
         _Soul.text = "Player SOUL: " + _playerObject._playerSoul;
-        _DMG.text = "Player DMG: " + _playerObject._playerDmg;
+        _DMG.text = "Player DMG: " + _playerObject.getDamage();
     }
 }

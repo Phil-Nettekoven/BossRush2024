@@ -3,10 +3,12 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public int _playerHP = 100;
-    public int _playerMP = 100;
-    public int _playerSoul = 100;
-    public int _playerDmg = 50;
+    [SerializeField] int _playerMaxHP, _playerMaxMP, _playerMaxSoul, _playerDmg;
+
+    public int _playerHP;
+    public int _playerMP;
+    public int _playerSoul;
+
     public const int rollCoolDown = 5;
     private GameManager _gm;
     private GridManager _gridManager;
@@ -15,7 +17,7 @@ public class Player : MonoBehaviour
     private float playerMoveDistance = 1f;
 
     const float timeToMove = 0.15f;
-    const float timeToWait = 0.05f;
+    const float timeToWait = 0.10f;
 
     private bool isMoving = false;
     private bool isRolling = false;
@@ -31,6 +33,8 @@ public class Player : MonoBehaviour
         _gm = GameManager.Instance;
         _gridManager = GridManager.Instance;
         setSprite(_petah);
+        _playerHP = _playerMaxHP;
+        _playerSoul = _playerMaxSoul;
     }
 
     // Update is called once per frame
@@ -112,7 +116,7 @@ public class Player : MonoBehaviour
                 hitWall = true;
             }
         }
-        
+
 
         if (hitWall)
         {
@@ -204,5 +208,10 @@ public class Player : MonoBehaviour
     private void setSprite(Sprite sprite)
     {
         this.gameObject.GetComponent<SpriteRenderer>().sprite = sprite;
+    }
+
+    public int getDamage()
+    {
+        return _playerDmg;
     }
 }
