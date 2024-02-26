@@ -7,9 +7,9 @@ public class Player : MonoBehaviour
 {
     [SerializeField] int _playerMaxHP, _playerMaxMP, _playerMaxSoul, _playerDmg;
 
-    public int _playerHP;
-    public int _playerMP;
-    public int _playerSoul;
+    public float _playerHP;
+    public float _playerMP;
+    public float _playerSoul;
 
     public const int rollCoolDown = 5;
     private GameManager _gm;
@@ -28,13 +28,12 @@ public class Player : MonoBehaviour
     private bool flippingRight = false;
     private bool flippingLeft = false;
 
-    public int _stunCounter;
+    private int _stunCounter = -1;
 
     [SerializeField] private Sprite _petah, _cloak, _mask1, _mask2, _mask3;
 
     void Start()
     {
-        _stunCounter = -1;
         _gm = GameManager.Instance;
         _gridManager = GridManager.Instance;
         setSprite(_petah);
@@ -75,7 +74,6 @@ public class Player : MonoBehaviour
             _gm.SendSignalMove();
             yield return new WaitForSeconds(_timeToWait + _timeToMove);
             _stunCounter -= 1;
-            //yield return null;
         }
         else
         {
@@ -83,7 +81,7 @@ public class Player : MonoBehaviour
         }
         _isMoving = false;
     }
-    public IEnumerator Move(Vector3 direction, float distance)
+    private IEnumerator Move(Vector3 direction, float distance)
     {
 
         if (isRolling && rollTimer <= 0) rollTimer = rollCoolDown;
@@ -211,5 +209,24 @@ public class Player : MonoBehaviour
     public int getDamage()
     {
         return _playerDmg;
+    }
+
+    public void DamagePlayer(float damage)
+    { //subtract damage from health
+        _playerHP -= damage;
+        print(_playerHP);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        switch (collider.transform.tag)
+        {
+            case "EnemyDmg":
+                DamagePlayer(collider.GetComponent<ShockTile>().GetDamage());
+                break;
+            default:
+                break;
+        }
+
     }
 }

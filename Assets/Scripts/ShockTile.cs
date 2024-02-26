@@ -64,4 +64,12 @@ public class ShockTile : MonoBehaviour
     public string getDirection(){
         return _direction;
     }
+
+    public int GetDamage(){
+        if (_rendered){
+            return _damage;
+        } else {
+            return 0;
+        }
+    }
 }
