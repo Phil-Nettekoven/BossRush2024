@@ -1,4 +1,6 @@
 using System.Collections;
+using Unity.VisualScripting;
+using UnityEditor.UI;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -16,20 +18,23 @@ public class Player : MonoBehaviour
 
     private float playerMoveDistance = 1f;
 
-    const float timeToMove = 0.15f;
-    const float timeToWait = 0.10f;
+    const float _timeToMove = 0.15f;
+    const float _timeToWait = 0.05f;
 
-    private bool isMoving = false;
+    private bool _isMoving = false;
     private bool isRolling = false;
 
     private bool isFacingRight = true;
     private bool flippingRight = false;
     private bool flippingLeft = false;
 
+    public int _stunCounter;
+
     [SerializeField] private Sprite _petah, _cloak, _mask1, _mask2, _mask3;
 
     void Start()
     {
+        _stunCounter = -1;
         _gm = GameManager.Instance;
         _gridManager = GridManager.Instance;
         setSprite(_petah);
@@ -40,7 +45,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!isMoving)
+        if (!_isMoving)
         {
             //If not already moving
             if (Input.GetKey(KeyCode.Space) && rollTimer <= 0)
@@ -56,16 +61,31 @@ public class Player : MonoBehaviour
             }
 
             //Tell player to move
-            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) StartCoroutine(Move(Vector3.up, playerMoveDistance));
-            else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) StartCoroutine(Move(Vector3.left, playerMoveDistance));
-            else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) StartCoroutine(Move(Vector3.down, playerMoveDistance));
-            else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) StartCoroutine(Move(Vector3.right, playerMoveDistance));
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) StartCoroutine(MoveWrapper(Vector3.up, playerMoveDistance));
+            else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) StartCoroutine(MoveWrapper(Vector3.left, playerMoveDistance));
+            else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) StartCoroutine(MoveWrapper(Vector3.down, playerMoveDistance));
+            else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) StartCoroutine(MoveWrapper(Vector3.right, playerMoveDistance));
         }
     }
-
+    private IEnumerator MoveWrapper(Vector3 direction, float distance)
+    {
+        _isMoving = true;
+        if (_stunCounter > 0)
+        {
+            _gm.SendSignalMove();
+            yield return new WaitForSeconds(_timeToWait + _timeToMove);
+            _stunCounter -= 1;
+            //yield return null;
+        }
+        else
+        {
+            yield return StartCoroutine(Move(direction, distance));
+        }
+        _isMoving = false;
+    }
     public IEnumerator Move(Vector3 direction, float distance)
     {
-        isMoving = true;
+
         if (isRolling && rollTimer <= 0) rollTimer = rollCoolDown;
         float elapsedTime = 0;
 
@@ -98,37 +118,17 @@ public class Player : MonoBehaviour
         Vector3 targetPos = origPos + (direction * distance); //Calculate desired position
 
 
-        //Check whether player is able to move to desired position
-        RaycastHit2D hit;
-        bool hitWall = false;
-        int divisor = (isRolling) ? divisor = 1 : divisor = 2;
-        //Debug.DrawRay(origPos, direction);
-        if (hit = Physics2D.Raycast(origPos + direction, direction, 1 / divisor))
+        while (distance > 0 && (!_gridManager.isInsideGrid(targetPos) || _gridManager.GetTileAtPosition(targetPos) == "Wall"))
         {
-            if (hit.collider.gameObject.tag == "Wall")
-            {
-                if (distance > 1 && Vector3.Distance(transform.position, hit.collider.gameObject.transform.position) >= 1)
-                {
-                    //If distance is > 1 unit
-                    StartCoroutine(Move(direction, distance - 1)); //Try next closest tile.
-                    yield break;
-                }
-                hitWall = true;
-            }
+            distance -= 1;
+            targetPos = origPos + (direction * distance);
         }
 
-
-        if (hitWall)
-        {
-            isMoving = false;
-            yield break;
-        }
-
-        while (elapsedTime < timeToMove)
+        while (elapsedTime < _timeToMove)
         {
             //While the player has time to move
             //Move towards target position (if able to move)
-            if (!hitWall) gameObject.transform.position = Vector3.Lerp(origPos, targetPos, elapsedTime / timeToMove);
+            gameObject.transform.position = Vector3.Lerp(origPos, targetPos, elapsedTime / _timeToMove);
 
             if (isRolling)
             {
@@ -140,13 +140,13 @@ public class Player : MonoBehaviour
                 else if (direction == Vector3.right && isFacingRight == false) rollDegrees = 360f; //If rolling right and facing left -> backflip
 
                 float yRot = gameObject.transform.eulerAngles.y; //Used to maintain y rotation
-                float zRot = Mathf.Lerp(0, rollDegrees, elapsedTime / timeToMove); //Determine amount to rotate this frame
+                float zRot = Mathf.Lerp(0, rollDegrees, elapsedTime / _timeToMove); //Determine amount to rotate this frame
                 gameObject.transform.rotation = Quaternion.Euler(0, yRot, zRot); //Rotate
             }
             else if (needsToFlip)
             {
                 //If player didn't roll and needs to flip
-                float yRot = Mathf.Lerp(origRot, targetRot, elapsedTime / timeToMove); //Determine amount to flip this frame
+                float yRot = Mathf.Lerp(origRot, targetRot, elapsedTime / _timeToMove); //Determine amount to flip this frame
                 gameObject.transform.rotation = Quaternion.Euler(0, yRot, 0); //Flip
             }
 
@@ -155,42 +155,41 @@ public class Player : MonoBehaviour
         }
 
         //This block prevents tiny offsets from adding up after many movements/rotations, keeping player on grid
-        if (!hitWall)
+
+        //If player was able to move
+        gameObject.transform.position = targetPos; //Set position to desired position
+
+        if (needsToFlip)
         {
-            //If player was able to move
-            gameObject.transform.position = targetPos; //Set position to desired position
-
-            if (needsToFlip)
+            //If player needs to flip
+            if (flippingRight)
             {
-                //If player needs to flip
-                if (flippingRight)
-                {
-                    //If player is flipping to the right
-                    gameObject.transform.rotation = Quaternion.Euler(0, 0, 0); //Set (y) rotation to desired rotation. NOTE: targetRot is intentionally not used here
-                    isFacingRight = true;
-                    flippingRight = false; //Reset direction tracker
-                }
-
-                if (flippingLeft)
-                {
-                    //If player is flipping to the left
-                    gameObject.transform.rotation = Quaternion.Euler(0, 180, 0); //Set (y) rotation to desired rotation. NOTE: targetRot is intentionally not used here
-                    isFacingRight = false;
-                    flippingLeft = false; //Reset direction tracker
-                }
-                needsToFlip = false; //Flip is complete
+                //If player is flipping to the right
+                gameObject.transform.rotation = Quaternion.Euler(0, 0, 0); //Set (y) rotation to desired rotation. NOTE: targetRot is intentionally not used here
+                isFacingRight = true;
+                flippingRight = false; //Reset direction tracker
             }
 
-            if (isRolling)
+            if (flippingLeft)
             {
-                //If player rolled
-                float yRot = gameObject.transform.eulerAngles.y; //Used to maintain y rotation
-                gameObject.transform.rotation = Quaternion.Euler(0, yRot, 0); //Set (z) rotation to desired rotation
-                isRolling = false; //Roll is complete
+                //If player is flipping to the left
+                gameObject.transform.rotation = Quaternion.Euler(0, 180, 0); //Set (y) rotation to desired rotation. NOTE: targetRot is intentionally not used here
+                isFacingRight = false;
+                flippingLeft = false; //Reset direction tracker
             }
+            needsToFlip = false; //Flip is complete
         }
 
-        while (elapsedTime < (timeToMove + timeToWait))
+        if (isRolling)
+        {
+            //If player rolled
+            float yRot = gameObject.transform.eulerAngles.y; //Used to maintain y rotation
+            gameObject.transform.rotation = Quaternion.Euler(0, yRot, 0); //Set (z) rotation to desired rotation
+            isRolling = false; //Roll is complete
+        }
+
+
+        while (elapsedTime < (_timeToMove + _timeToWait))
         {
             //While the player waits to move again
             elapsedTime += Time.deltaTime;
@@ -198,7 +197,6 @@ public class Player : MonoBehaviour
         }
         if (rollTimer > 0) rollTimer -= 1;
         _gm.SendSignalMove();
-        isMoving = false; //Movement complete
     }
 
     /// <summary>
