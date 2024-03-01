@@ -21,6 +21,8 @@ public class Player : MonoBehaviour
     const float _timeToMove = 0.15f;
     const float _timeToWait = 0.05f;
 
+    const int _invincibleTurns = 3;
+
     private bool _isMoving = false;
     private bool isRolling = false;
 
@@ -28,7 +30,10 @@ public class Player : MonoBehaviour
     private bool flippingRight = false;
     private bool flippingLeft = false;
 
-    private int _stunCounter = -1;
+    public int _stunCounter = -1;
+
+    public int _invincibleCounter = -1;
+
 
     [SerializeField] private Sprite _petah, _cloak, _mask1, _mask2, _mask3;
 
@@ -69,6 +74,7 @@ public class Player : MonoBehaviour
     private IEnumerator MoveWrapper(Vector3 direction, float distance)
     {
         _isMoving = true;
+        if (_invincibleCounter > 0) { _invincibleCounter -= 1; } //decrement invincible state counter
         if (_stunCounter > 0)
         {
             _gm.SendSignalMove();
@@ -215,6 +221,16 @@ public class Player : MonoBehaviour
     { //subtract damage from health
         _playerHP -= damage;
         print(_playerHP);
+        if (_playerHP <= 0)
+        {
+            print("dead");
+        }
+
+    }
+
+    public void HealPlayer(float heal)
+    {
+        if ((_playerHP + heal) > _playerMaxHP) { _playerHP = _playerMaxHP; } else { _playerHP += heal; }
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
@@ -222,7 +238,16 @@ public class Player : MonoBehaviour
         switch (collider.transform.tag)
         {
             case "EnemyDmg":
-                DamagePlayer(collider.GetComponent<ShockTile>().GetDamage());
+                int damage = collider.GetComponent<ShockTile>().GetDamage(); //get attack damage
+                if (_invincibleCounter <= 0 && damage > 0)
+                {  //check if player is invincible
+                    DamagePlayer(damage);
+                    _invincibleCounter = _invincibleTurns; //give player invincibility turns
+                }
+                break;
+            case "PlayerHeal":
+                print("Heal");
+                //HealPlayer(collider.GetComponent<heal>().GetHeal());
                 break;
             default:
                 break;
